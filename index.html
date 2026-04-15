@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Countdown Timer - Editor</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans JP', sans-serif;
+    background: #f5f5fa;
+    color: #1a1a2e;
+    min-height: 100vh;
+  }
+
+  .header {
+    background: #16213e;
+    color: #fff;
+    padding: 24px 32px;
+  }
+
+  .header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  .header p {
+    font-size: 0.85rem;
+    color: #aab;
+    margin-top: 4px;
+  }
+
+  .main {
+    max-width: 720px;
+    margin: 32px auto;
+    padding: 0 20px;
+  }
+
+  /* Form */
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 28px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    margin-bottom: 24px;
+  }
+
+  .card h2 {
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    color: #16213e;
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #555;
+  }
+
+  .form-group input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: border-color 0.2s;
+    font-family: inherit;
+  }
+
+  .form-group input:focus {
+    outline: none;
+    border-color: #0f3460;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-family: inherit;
+  }
+
+  .btn-primary {
+    background: #0f3460;
+    color: #fff;
+  }
+
+  .btn-primary:hover { background: #16213e; }
+
+  .btn-secondary {
+    background: #e8e8f0;
+    color: #333;
+  }
+
+  .btn-secondary:hover { background: #d8d8e4; }
+
+  .btn-danger {
+    background: #fee;
+    color: #c44;
+    font-size: 0.8rem;
+    padding: 6px 12px;
+  }
+
+  .btn-danger:hover { background: #fdd; }
+
+  .actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+  }
+
+  /* Event list */
+  .event-item {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .event-info {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .event-info .name {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #16213e;
+  }
+
+  .event-info .date {
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 2px;
+  }
+
+  .event-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  /* Embed URL area */
+  .embed-url-area {
+    margin-top: 12px;
+    display: none;
+  }
+
+  .embed-url-area.show {
+    display: block;
+  }
+
+  .embed-url-area label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #555;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .embed-url-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .embed-url-row input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-family: monospace;
+    background: #fafafa;
+    color: #333;
+  }
+
+  .copied-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #16213e;
+    color: #fff;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  .copied-toast.show { opacity: 1; }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #aaa;
+    font-size: 0.95rem;
+  }
+
+  /* Preview */
+  .preview-frame {
+    width: 100%;
+    height: 180px;
+    border: 1.5px solid #e0e0e8;
+    border-radius: 8px;
+    margin-top: 12px;
+    background: #fff;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Countdown Timer</h1>
+  <p>イベントを作成して、Notionに埋め込み用URLをコピーしましょう</p>
+</div>
+
+<div class="main">
+  <!-- Create / Edit form -->
+  <div class="card" id="form-card">
+    <h2 id="form-title">New Event</h2>
+    <div class="form-group">
+      <label for="event-name">Event Name</label>
+      <input type="text" id="event-name" placeholder="e.g. Product Launch">
+    </div>
+    <div class="form-group">
+      <label for="event-date">Date &amp; Time</label>
+      <input type="datetime-local" id="event-date">
+    </div>
+    <div class="actions">
+      <button class="btn btn-primary" id="btn-save">Save</button>
+      <button class="btn btn-secondary" id="btn-cancel" style="display:none;">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Event list -->
+  <h2 style="font-size:1.1rem; margin-bottom:14px; color:#16213e;">Saved Events</h2>
+  <div id="event-list">
+    <div class="empty-state">No events yet. Create one above.</div>
+  </div>
+</div>
+
+<div class="copied-toast" id="toast">Copied!</div>
+
+<script>
+(function() {
+  const STORAGE_KEY = 'countdown_events';
+
+  function loadEvents() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    } catch {
+      return [];
+    }
+  }
+
+  function saveEvents(events) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+  }
+
+  function generateId() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  }
+
+  function formatDate(iso) {
+    const d = new Date(iso);
+    return d.toLocaleString('ja-JP', {
+      year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit'
+    });
+  }
+
+  function getEmbedUrl(event) {
+    const base = new URL('embed.html', window.location.href).href;
+    const params = new URLSearchParams({ name: event.name, date: event.date });
+    return base + '?' + params.toString();
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  let editingId = null;
+
+  const nameInput = document.getElementById('event-name');
+  const dateInput = document.getElementById('event-date');
+  const btnSave = document.getElementById('btn-save');
+  const btnCancel = document.getElementById('btn-cancel');
+  const formTitle = document.getElementById('form-title');
+  const eventList = document.getElementById('event-list');
+  const toast = document.getElementById('toast');
+
+  function showToast(msg) {
+    toast.textContent = msg || 'Copied!';
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 1600);
+  }
+
+  function render() {
+    const events = loadEvents();
+    if (events.length === 0) {
+      eventList.innerHTML = '<div class="empty-state">No events yet. Create one above.</div>';
+      return;
+    }
+
+    eventList.innerHTML = events.map(ev => `
+      <div class="event-item" data-id="${ev.id}">
+        <div class="event-info">
+          <div class="name">${escapeHtml(ev.name)}</div>
+          <div class="date">${formatDate(ev.date)}</div>
+        </div>
+        <div class="event-actions">
+          <button class="btn btn-secondary btn-embed" data-id="${ev.id}">Embed URL</button>
+          <button class="btn btn-secondary btn-preview" data-id="${ev.id}">Preview</button>
+          <button class="btn btn-secondary btn-edit" data-id="${ev.id}">Edit</button>
+          <button class="btn btn-danger btn-delete" data-id="${ev.id}">Delete</button>
+        </div>
+        <div class="embed-url-area" id="embed-${ev.id}">
+          <label>Notion embed URL (copy this):</label>
+          <div class="embed-url-row">
+            <input type="text" readonly value="${escapeHtml(getEmbedUrl(ev))}">
+            <button class="btn btn-secondary btn-copy" data-id="${ev.id}">Copy</button>
+          </div>
+          <iframe class="preview-frame" id="preview-frame-${ev.id}" style="display:none;"></iframe>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function resetForm() {
+    editingId = null;
+    nameInput.value = '';
+    dateInput.value = '';
+    formTitle.textContent = 'New Event';
+    btnSave.textContent = 'Save';
+    btnCancel.style.display = 'none';
+  }
+
+  btnSave.addEventListener('click', () => {
+    const name = nameInput.value.trim();
+    const date = dateInput.value;
+    if (!name || !date) {
+      showToast('Please fill in all fields');
+      return;
+    }
+
+    const events = loadEvents();
+
+    if (editingId) {
+      const idx = events.findIndex(e => e.id === editingId);
+      if (idx !== -1) {
+        events[idx].name = name;
+        events[idx].date = date;
+      }
+    } else {
+      events.push({ id: generateId(), name, date });
+    }
+
+    saveEvents(events);
+    resetForm();
+    render();
+    showToast(editingId ? 'Updated!' : 'Saved!');
+  });
+
+  btnCancel.addEventListener('click', resetForm);
+
+  eventList.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    const id = btn.dataset.id;
+    const events = loadEvents();
+
+    if (btn.classList.contains('btn-embed')) {
+      const area = document.getElementById('embed-' + id);
+      area.classList.toggle('show');
+      // hide preview when toggling
+      const frame = document.getElementById('preview-frame-' + id);
+      if (frame) frame.style.display = 'none';
+    }
+
+    if (btn.classList.contains('btn-copy')) {
+      const ev = events.find(e => e.id === id);
+      if (ev) {
+        navigator.clipboard.writeText(getEmbedUrl(ev)).then(() => showToast('Copied!'));
+      }
+    }
+
+    if (btn.classList.contains('btn-preview')) {
+      const area = document.getElementById('embed-' + id);
+      area.classList.add('show');
+      const frame = document.getElementById('preview-frame-' + id);
+      const ev = events.find(e => e.id === id);
+      if (frame && ev) {
+        frame.style.display = frame.style.display === 'none' ? 'block' : 'none';
+        if (frame.style.display === 'block') {
+          frame.src = getEmbedUrl(ev);
+        }
+      }
+    }
+
+    if (btn.classList.contains('btn-edit')) {
+      const ev = events.find(e => e.id === id);
+      if (ev) {
+        editingId = ev.id;
+        nameInput.value = ev.name;
+        dateInput.value = ev.date;
+        formTitle.textContent = 'Edit Event';
+        btnSave.textContent = 'Update';
+        btnCancel.style.display = 'inline-flex';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    if (btn.classList.contains('btn-delete')) {
+      if (confirm(`"${events.find(e => e.id === id)?.name}" を削除しますか?`)) {
+        const filtered = events.filter(e => e.id !== id);
+        saveEvents(filtered);
+        render();
+        if (editingId === id) resetForm();
+        showToast('Deleted');
+      }
+    }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
