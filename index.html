@@ -219,6 +219,59 @@
     font-size: 0.95rem;
   }
 
+  /* Location autocomplete */
+  .location-wrapper {
+    position: relative;
+  }
+
+  .location-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1.5px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 50;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    display: none;
+  }
+
+  .location-suggestions.show {
+    display: block;
+  }
+
+  .location-suggestion {
+    padding: 10px 14px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .location-suggestion:last-child {
+    border-bottom: none;
+  }
+
+  .location-suggestion:hover {
+    background: #f0f0f5;
+  }
+
+  .location-suggestion .city-name {
+    font-weight: 600;
+    color: #16213e;
+  }
+
+  .location-suggestion .city-detail {
+    font-size: 0.78rem;
+    color: #999;
+  }
+
   /* Preview */
   .preview-frame {
     width: 100%;
@@ -251,7 +304,10 @@
     </div>
     <div class="form-group">
       <label for="event-location">Location (optional)</label>
-      <input type="text" id="event-location" placeholder="e.g. Tokyo, New York, London">
+      <div class="location-wrapper">
+        <input type="text" id="event-location" placeholder="e.g. Tokyo, New York, London" autocomplete="off">
+        <div class="location-suggestions" id="location-suggestions"></div>
+      </div>
     </div>
     <div class="actions">
       <button class="btn btn-primary" id="btn-save">Save</button>
@@ -315,6 +371,62 @@
   const nameInput = document.getElementById('event-name');
   const dateInput = document.getElementById('event-date');
   const locationInput = document.getElementById('event-location');
+  const suggestionsEl = document.getElementById('location-suggestions');
+
+  // --- Location autocomplete ---
+  let debounceTimer = null;
+
+  locationInput.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    const query = locationInput.value.trim();
+    if (query.length < 2) {
+      suggestionsEl.classList.remove('show');
+      return;
+    }
+    debounceTimer = setTimeout(() => fetchSuggestions(query), 300);
+  });
+
+  locationInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') suggestionsEl.classList.remove('show');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.location-wrapper')) {
+      suggestionsEl.classList.remove('show');
+    }
+  });
+
+  async function fetchSuggestions(query) {
+    try {
+      const res = await fetch(
+        'https://geocoding-api.open-meteo.com/v1/search?name=' +
+        encodeURIComponent(query) + '&count=5&language=en'
+      );
+      const data = await res.json();
+      if (!data.results || data.results.length === 0) {
+        suggestionsEl.classList.remove('show');
+        return;
+      }
+      suggestionsEl.innerHTML = data.results.map(r => {
+        const parts = [r.admin1, r.country].filter(Boolean);
+        return `<div class="location-suggestion" data-name="${escapeHtml(r.name)}, ${escapeHtml(r.country || '')}">
+          <span class="city-name">${escapeHtml(r.name)}</span>
+          <span class="city-detail">${escapeHtml(parts.join(', '))}</span>
+        </div>`;
+      }).join('');
+      suggestionsEl.classList.add('show');
+    } catch {
+      suggestionsEl.classList.remove('show');
+    }
+  }
+
+  suggestionsEl.addEventListener('click', (e) => {
+    const item = e.target.closest('.location-suggestion');
+    if (item) {
+      locationInput.value = item.dataset.name;
+      suggestionsEl.classList.remove('show');
+    }
+  });
   const btnSave = document.getElementById('btn-save');
   const btnCancel = document.getElementById('btn-cancel');
   const formTitle = document.getElementById('form-title');
