@@ -249,6 +249,10 @@
       <label for="event-date">Date &amp; Time</label>
       <input type="datetime-local" id="event-date">
     </div>
+    <div class="form-group">
+      <label for="event-location">Location (optional)</label>
+      <input type="text" id="event-location" placeholder="e.g. Tokyo, New York, London">
+    </div>
     <div class="actions">
       <button class="btn btn-primary" id="btn-save">Save</button>
       <button class="btn btn-secondary" id="btn-cancel" style="display:none;">Cancel</button>
@@ -294,7 +298,9 @@
 
   function getEmbedUrl(event) {
     const base = new URL('embed.html', window.location.href).href;
-    const params = new URLSearchParams({ name: event.name, date: event.date });
+    const p = { name: event.name, date: event.date };
+    if (event.location) p.location = event.location;
+    const params = new URLSearchParams(p);
     return base + '?' + params.toString();
   }
 
@@ -308,6 +314,7 @@
 
   const nameInput = document.getElementById('event-name');
   const dateInput = document.getElementById('event-date');
+  const locationInput = document.getElementById('event-location');
   const btnSave = document.getElementById('btn-save');
   const btnCancel = document.getElementById('btn-cancel');
   const formTitle = document.getElementById('form-title');
@@ -331,7 +338,7 @@
       <div class="event-item" data-id="${ev.id}">
         <div class="event-info">
           <div class="name">${escapeHtml(ev.name)}</div>
-          <div class="date">${formatDate(ev.date)}</div>
+          <div class="date">${formatDate(ev.date)}${ev.location ? ' / ' + escapeHtml(ev.location) : ''}</div>
         </div>
         <div class="event-actions">
           <button class="btn btn-secondary btn-embed" data-id="${ev.id}">Embed URL</button>
@@ -355,6 +362,7 @@
     editingId = null;
     nameInput.value = '';
     dateInput.value = '';
+    locationInput.value = '';
     formTitle.textContent = 'New Event';
     btnSave.textContent = 'Save';
     btnCancel.style.display = 'none';
@@ -363,6 +371,7 @@
   btnSave.addEventListener('click', () => {
     const name = nameInput.value.trim();
     const date = dateInput.value;
+    const location = locationInput.value.trim();
     if (!name || !date) {
       showToast('Please fill in all fields');
       return;
@@ -375,9 +384,10 @@
       if (idx !== -1) {
         events[idx].name = name;
         events[idx].date = date;
+        events[idx].location = location;
       }
     } else {
-      events.push({ id: generateId(), name, date });
+      events.push({ id: generateId(), name, date, location });
     }
 
     saveEvents(events);
@@ -428,6 +438,7 @@
         editingId = ev.id;
         nameInput.value = ev.name;
         dateInput.value = ev.date;
+        locationInput.value = ev.location || '';
         formTitle.textContent = 'Edit Event';
         btnSave.textContent = 'Update';
         btnCancel.style.display = 'inline-flex';
