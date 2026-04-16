@@ -451,11 +451,14 @@
     var base = new URL('embed.html', window.location.href).href;
     var p = { name: ev.name, date: ev.date + 'T' + ev.hour + ':00' };
     if (ev.location) p.location = ev.location;
-    if (ev.bgimage) {
-      // Store image in localStorage and pass key instead of data URI
+    if (ev.bgimage && ev.bgimage.startsWith('data:')) {
+      // Uploaded image (data URI) - store in localStorage, pass key
       var bgKey = 'countdown_bg_' + ev.id;
-      localStorage.setItem(bgKey, ev.bgimage);
+      try { localStorage.setItem(bgKey, ev.bgimage); } catch(e) {}
       p.bgkey = ev.id;
+    } else if (ev.bgimage) {
+      // Custom image URL - pass directly (short enough for URL params)
+      p.bgimage = ev.bgimage;
     } else if (ev.bgPreset) {
       p.bg = ev.bgPreset;
     }
