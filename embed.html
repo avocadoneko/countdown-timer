@@ -302,22 +302,21 @@
       var now = new Date();
       var diffDays = Math.floor((targetDate-now)/86400000);
 
-      if(diffDays>7){container.innerHTML='<div class="weather-info"><span class="weather-icon">❓</span><span>'+formatWeatherDate(eventDateStr)+' '+escapeHtml(geo.name)+' の天気予報はイベント7日前から表示</span></div>';return;}
       if(diffDays<0) return;
+      if(diffDays>16){container.innerHTML='<div class="weather-note">天気データを取得できませんでした</div>';return;}
 
       var wRes = await fetch('https://api.open-meteo.com/v1/forecast?latitude='+geo.latitude+'&longitude='+geo.longitude+'&daily=temperature_2m_max,temperature_2m_min&hourly=weather_code&timezone='+encodeURIComponent(geo.timezone||'auto')+'&start_date='+eventDateStr+'&end_date='+eventDateStr);
       var wData = await wRes.json();
       if(!wData.daily||!wData.hourly){container.innerHTML='<div class="weather-note">天気データを取得できませんでした</div>';return;}
 
-      var tMax=Math.round(wData.daily.temperature_2m_max[0]);
-      var tMin=Math.round(wData.daily.temperature_2m_min[0]);
       var r=summarizeHourly(wData.hourly.weather_code.slice(6,18));
       var dl=formatWeatherDate(eventDateStr);
+      var tempStr = diffDays>7 ? '？°/？°' : Math.round(wData.daily.temperature_2m_min[0])+'°/'+Math.round(wData.daily.temperature_2m_max[0])+'°';
 
       container.innerHTML=
         '<div class="weather-info">'+
           '<span class="weather-icon">'+r.icon+'</span>'+
-          '<span>'+dl+' '+escapeHtml(geo.name)+' '+r.desc+' '+tMin+'°/'+tMax+'°</span>'+
+          '<span>'+dl+' '+escapeHtml(geo.name)+' '+r.desc+' '+tempStr+'</span>'+
         '</div>';
     } catch(e) {
       container.innerHTML='<div class="weather-note">天気データを取得できませんでした</div>';
