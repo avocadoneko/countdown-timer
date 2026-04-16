@@ -199,42 +199,78 @@
   // --- Weather ---
   if (!location) return;
 
-  const WMO_CODES = {
-    0: ['Clear', '\u2600\uFE0F'],
-    1: ['Mostly Clear', '\uD83C\uDF24\uFE0F'],
-    2: ['Partly Cloudy', '\u26C5'],
-    3: ['Overcast', '\u2601\uFE0F'],
-    45: ['Fog', '\uD83C\uDF2B\uFE0F'],
-    48: ['Rime Fog', '\uD83C\uDF2B\uFE0F'],
-    51: ['Light Drizzle', '\uD83C\uDF26\uFE0F'],
-    53: ['Drizzle', '\uD83C\uDF26\uFE0F'],
-    55: ['Heavy Drizzle', '\uD83C\uDF27\uFE0F'],
-    56: ['Freezing Drizzle', '\uD83C\uDF27\uFE0F'],
-    57: ['Heavy Freezing Drizzle', '\uD83C\uDF27\uFE0F'],
-    61: ['Light Rain', '\uD83C\uDF26\uFE0F'],
-    63: ['Rain', '\uD83C\uDF27\uFE0F'],
-    65: ['Heavy Rain', '\uD83C\uDF27\uFE0F'],
-    66: ['Freezing Rain', '\uD83C\uDF27\uFE0F'],
-    67: ['Heavy Freezing Rain', '\uD83C\uDF27\uFE0F'],
-    71: ['Light Snow', '\uD83C\uDF28\uFE0F'],
-    73: ['Snow', '\u2744\uFE0F'],
-    75: ['Heavy Snow', '\u2744\uFE0F'],
-    77: ['Snow Grains', '\u2744\uFE0F'],
-    80: ['Light Showers', '\uD83C\uDF26\uFE0F'],
-    81: ['Showers', '\uD83C\uDF27\uFE0F'],
-    82: ['Heavy Showers', '\u26C8\uFE0F'],
-    85: ['Light Snow Showers', '\uD83C\uDF28\uFE0F'],
-    86: ['Heavy Snow Showers', '\uD83C\uDF28\uFE0F'],
-    95: ['Thunderstorm', '\u26A1'],
-    96: ['Thunderstorm + Hail', '\u26A1'],
-    99: ['Thunderstorm + Heavy Hail', '\u26A1']
+  // WMO code -> [日本語, emoji, カテゴリ]
+  // カテゴリ: 'clear','cloudy','rain','snow','storm','fog' で「のち」判定に使う
+  const WMO = {
+    0:  ['\u6674\u308C',           '\u2600\uFE0F',           'clear'],
+    1:  ['\u6674\u308C',           '\uD83C\uDF24\uFE0F',     'clear'],
+    2:  ['\u66C7\u308A',           '\u26C5',                  'cloudy'],
+    3:  ['\u66C7\u308A',           '\u2601\uFE0F',            'cloudy'],
+    45: ['\u9727',                 '\uD83C\uDF2B\uFE0F',     'fog'],
+    48: ['\u9727',                 '\uD83C\uDF2B\uFE0F',     'fog'],
+    51: ['\u5C0F\u96E8',           '\uD83C\uDF26\uFE0F',     'rain'],
+    53: ['\u96E8',                 '\uD83C\uDF27\uFE0F',     'rain'],
+    55: ['\u5F37\u3044\u96E8',     '\uD83C\uDF27\uFE0F',     'rain'],
+    56: ['\u51CD\u96E8',           '\uD83C\uDF27\uFE0F',     'rain'],
+    57: ['\u5F37\u3044\u51CD\u96E8','\uD83C\uDF27\uFE0F',    'rain'],
+    61: ['\u5C0F\u96E8',           '\uD83C\uDF26\uFE0F',     'rain'],
+    63: ['\u96E8',                 '\uD83C\uDF27\uFE0F',     'rain'],
+    65: ['\u5927\u96E8',           '\uD83C\uDF27\uFE0F',     'rain'],
+    66: ['\u51CD\u96E8',           '\uD83C\uDF27\uFE0F',     'rain'],
+    67: ['\u5F37\u3044\u51CD\u96E8','\uD83C\uDF27\uFE0F',    'rain'],
+    71: ['\u5C0F\u96EA',           '\uD83C\uDF28\uFE0F',     'snow'],
+    73: ['\u96EA',                 '\u2744\uFE0F',            'snow'],
+    75: ['\u5927\u96EA',           '\u2744\uFE0F',            'snow'],
+    77: ['\u96EA',                 '\u2744\uFE0F',            'snow'],
+    80: ['\u306B\u308F\u304B\u96E8','\uD83C\uDF26\uFE0F',    'rain'],
+    81: ['\u96E8',                 '\uD83C\uDF27\uFE0F',     'rain'],
+    82: ['\u5F37\u3044\u96E8',     '\u26C8\uFE0F',           'rain'],
+    85: ['\u306B\u308F\u304B\u96EA','\uD83C\uDF28\uFE0F',    'snow'],
+    86: ['\u5F37\u3044\u96EA',     '\uD83C\uDF28\uFE0F',     'snow'],
+    95: ['\u96F7\u96E8',           '\u26A1',                  'storm'],
+    96: ['\u96F7\u96E8',           '\u26A1',                  'storm'],
+    99: ['\u6FC0\u3057\u3044\u96F7\u96E8','\u26A1',           'storm']
   };
+
+  function getWmo(code) { return WMO[code] || ['\u4E0D\u660E', '\uD83C\uDF10', 'unknown']; }
+
+  // 時間帯別コードから「晴れのち曇り」形式の説明文を作る
+  function summarizeHourly(codes) {
+    // 6-12時 = 午前, 12-18時 = 午後 として前半/後半に分ける
+    const first = codes.slice(0, Math.ceil(codes.length / 2));
+    const second = codes.slice(Math.ceil(codes.length / 2));
+
+    function dominant(arr) {
+      const freq = {};
+      arr.forEach(c => { const cat = getWmo(c)[2]; freq[cat] = (freq[cat] || 0) + 1; });
+      return Object.entries(freq).sort((a, b) => b[1] - a[1])[0][0];
+    }
+
+    function catToLabel(cat) {
+      const map = { clear: '\u6674\u308C', cloudy: '\u66C7\u308A', rain: '\u96E8', snow: '\u96EA', storm: '\u96F7\u96E8', fog: '\u9727' };
+      return map[cat] || '\u4E0D\u660E';
+    }
+
+    function catToIcon(cat) {
+      const map = { clear: '\u2600\uFE0F', cloudy: '\u2601\uFE0F', rain: '\uD83C\uDF27\uFE0F', snow: '\u2744\uFE0F', storm: '\u26A1', fog: '\uD83C\uDF2B\uFE0F' };
+      return map[cat] || '\uD83C\uDF10';
+    }
+
+    const catFirst = dominant(first);
+    const catSecond = dominant(second);
+
+    if (catFirst === catSecond) {
+      return { desc: catToLabel(catFirst), icon: catToIcon(catFirst) };
+    }
+    // 「晴れのち曇り」形式
+    return { desc: catToLabel(catFirst) + '\u306E\u3061' + catToLabel(catSecond), icon: catToIcon(catFirst) };
+  }
 
   async function fetchWeather() {
     const container = document.getElementById('weather-container');
 
     try {
-      // 1. Geocode
+      // 1. Geocode (タイムゾーン情報も取得)
       const geoRes = await fetch(
         'https://geocoding-api.open-meteo.com/v1/search?name=' +
         encodeURIComponent(location) + '&count=1&language=en'
@@ -242,49 +278,53 @@
       const geoData = await geoRes.json();
 
       if (!geoData.results || geoData.results.length === 0) {
-        container.innerHTML = '<div class="weather-note">Location not found</div>';
+        container.innerHTML = '<div class="weather-note">\u5834\u6240\u304C\u898B\u3064\u304B\u308A\u307E\u305B\u3093</div>';
         return;
       }
 
-      const { latitude, longitude, name: cityName, country } = geoData.results[0];
-      const eventDateStr = targetDate.toISOString().slice(0, 10);
+      const { latitude, longitude, name: cityName, country, timezone } = geoData.results[0];
 
-      // 2. Check if within forecast range (16 days)
+      // URLパラメータの日付文字列から直接日付部分を取得（UTC変換による日付ズレを防ぐ）
+      const eventDateStr = date.slice(0, 10);
+
+      // 2. 予報範囲チェック（16日先まで）
       const now = new Date();
       const diffDays = Math.floor((targetDate - now) / (1000 * 60 * 60 * 24));
 
       if (diffDays > 16) {
         container.innerHTML = `
           <div class="weather-note">
-            ${escapeHtml(cityName)} の天気予報はイベント16日前から表示されます
+            ${escapeHtml(cityName)} \u306E\u5929\u6C17\u4E88\u5831\u306F\u30A4\u30D9\u30F3\u30C816\u65E5\u524D\u304B\u3089\u8868\u793A\u3055\u308C\u307E\u3059
           </div>`;
         return;
       }
 
-      if (diffDays < 0) {
-        // Event already passed — no weather needed
-        return;
-      }
+      if (diffDays < 0) return;
 
-      // 3. Fetch forecast
+      // 3. 時間帯別天気 + 日別気温を取得（開催地タイムゾーンを明示指定）
       const weatherRes = await fetch(
         'https://api.open-meteo.com/v1/forecast?latitude=' + latitude +
         '&longitude=' + longitude +
-        '&daily=weather_code,temperature_2m_max,temperature_2m_min' +
-        '&timezone=auto&start_date=' + eventDateStr +
+        '&daily=temperature_2m_max,temperature_2m_min' +
+        '&hourly=weather_code' +
+        '&timezone=' + encodeURIComponent(timezone || 'auto') +
+        '&start_date=' + eventDateStr +
         '&end_date=' + eventDateStr
       );
       const weatherData = await weatherRes.json();
 
-      if (!weatherData.daily || !weatherData.daily.weather_code) {
-        container.innerHTML = '<div class="weather-note">Weather data unavailable</div>';
+      if (!weatherData.daily || !weatherData.hourly) {
+        container.innerHTML = '<div class="weather-note">\u5929\u6C17\u30C7\u30FC\u30BF\u3092\u53D6\u5F97\u3067\u304D\u307E\u305B\u3093\u3067\u3057\u305F</div>';
         return;
       }
 
-      const code = weatherData.daily.weather_code[0];
       const tempMax = Math.round(weatherData.daily.temperature_2m_max[0]);
       const tempMin = Math.round(weatherData.daily.temperature_2m_min[0]);
-      const [desc, icon] = WMO_CODES[code] || ['Unknown', '\uD83C\uDF10'];
+
+      // 6:00〜18:00 の時間帯コードで日中の天気を判定
+      const hourlyCodes = weatherData.hourly.weather_code;
+      const daytimeCodes = hourlyCodes.slice(6, 18);
+      const { desc, icon } = summarizeHourly(daytimeCodes);
 
       container.innerHTML = `
         <div class="weather">
@@ -297,7 +337,7 @@
         </div>
       `;
     } catch {
-      container.innerHTML = '<div class="weather-note">Weather data unavailable</div>';
+      container.innerHTML = '<div class="weather-note">\u5929\u6C17\u30C7\u30FC\u30BF\u3092\u53D6\u5F97\u3067\u304D\u307E\u305B\u3093\u3067\u3057\u305F</div>';
     }
   }
 
