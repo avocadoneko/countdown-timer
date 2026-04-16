@@ -5,243 +5,271 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Countdown Timer - Editor</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans JP', sans-serif;
-    background: #f5f5fa;
-    color: #1a1a2e;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Noto Sans JP', sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
     min-height: 100vh;
   }
 
   .header {
-    background: #16213e;
-    color: #fff;
-    padding: 24px 32px;
+    padding: 32px 32px 24px;
+    max-width: 720px;
+    margin: 0 auto;
   }
 
-  .header h1 { font-size: 1.5rem; font-weight: 700; }
-  .header p { font-size: 0.85rem; color: #aab; margin-top: 4px; }
+  .header h1 { font-size: 1.4rem; font-weight: 800; color: #fff; }
+  .header p { font-size: 0.8rem; color: #64748b; margin-top: 4px; }
 
   .main {
     max-width: 720px;
-    margin: 32px auto;
-    padding: 0 20px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
   }
 
+  /* Card */
   .card {
-    background: #fff;
-    border-radius: 12px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
     padding: 28px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    margin-bottom: 24px;
+    margin-bottom: 28px;
   }
 
-  .card h2 { font-size: 1.1rem; margin-bottom: 20px; color: #16213e; }
+  .card h2 { font-size: 0.95rem; margin-bottom: 22px; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
 
-  .form-group { margin-bottom: 16px; }
+  /* Form */
+  .form-group { margin-bottom: 18px; }
 
   .form-group label {
-    display: block;
-    font-size: 0.85rem;
-    font-weight: 600;
-    margin-bottom: 6px;
-    color: #555;
+    display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px; color: #94a3b8;
   }
 
   .form-group input, .form-group select {
+    width: 100%;
     padding: 10px 14px;
-    border: 1.5px solid #ddd;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    transition: border-color 0.2s;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    font-size: 0.9rem;
     font-family: inherit;
-    background: #fff;
+    background: rgba(255,255,255,0.06);
+    color: #e2e8f0;
+    transition: border-color 0.2s;
   }
 
   .form-group input:focus, .form-group select:focus {
-    outline: none;
-    border-color: #0f3460;
+    outline: none; border-color: rgba(255,255,255,0.3);
   }
 
-  .form-group input[type="text"],
-  .form-group input[type="url"] { width: 100%; }
+  .form-group input::placeholder { color: #475569; }
 
-  /* Date + Hour row */
-  .date-hour-row {
-    display: flex;
-    gap: 10px;
-  }
-
+  .date-hour-row { display: flex; gap: 10px; }
   .date-hour-row input[type="date"] { flex: 1; }
+  .date-hour-row select { width: 110px; }
 
-  .date-hour-row select {
-    width: 100px;
-  }
-
-  /* Color swatches */
-  .color-swatches {
-    display: flex;
+  /* Bg presets */
+  .bg-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 10px;
-    flex-wrap: wrap;
   }
 
-  .color-swatch {
-    width: 44px;
-    height: 44px;
-    border-radius: 10px;
-    border: 3px solid transparent;
-    cursor: pointer;
-    transition: border-color 0.2s, transform 0.15s;
+  .bg-option {
     position: relative;
+    aspect-ratio: 16/10;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: border-color 0.2s, transform 0.15s;
+    background-size: cover;
+    background-position: center;
   }
 
-  .color-swatch:hover { transform: scale(1.1); }
+  .bg-option:hover { transform: scale(1.03); }
 
-  .color-swatch.selected {
-    border-color: #0f3460;
+  .bg-option.selected {
+    border-color: #818cf8;
+    box-shadow: 0 0 0 2px rgba(129,140,248,0.3);
   }
 
-  .color-swatch.selected::after {
+  .bg-option .bg-label {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 4px 8px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.6));
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.8);
+    text-align: center;
+  }
+
+  .bg-option.selected::after {
     content: '\2713';
     position: absolute;
-    inset: 0;
+    top: 6px; right: 8px;
+    background: #818cf8;
+    color: #fff;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; font-weight: 700;
+  }
+
+  /* Upload area */
+  .upload-area {
+    margin-top: 12px;
     display: flex;
+    gap: 10px;
     align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-    font-weight: 700;
   }
 
-  .color-swatch[data-color="FFE74C"].selected::after,
-  .color-swatch[data-color="FFFFFF"].selected::after { color: #333; }
-  .color-swatch[data-color="FF5964"].selected::after,
-  .color-swatch[data-color="38618C"].selected::after,
-  .color-swatch[data-color="35A7FF"].selected::after { color: #fff; }
-
-  .swatch-white { border-color: #ddd; }
-  .swatch-white.selected { border-color: #0f3460; }
-
-  .bg-hint {
-    font-size: 0.75rem;
-    color: #999;
-    margin-top: 6px;
-  }
-
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    font-size: 0.9rem;
+  .upload-btn {
+    padding: 8px 16px;
+    border: 1px dashed rgba(255,255,255,0.2);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.04);
+    color: #94a3b8;
+    font-size: 0.8rem;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s;
     font-family: inherit;
+    transition: border-color 0.2s;
+    white-space: nowrap;
   }
 
-  .btn-primary { background: #0f3460; color: #fff; }
-  .btn-primary:hover { background: #16213e; }
-  .btn-secondary { background: #e8e8f0; color: #333; }
-  .btn-secondary:hover { background: #d8d8e4; }
-  .btn-danger { background: #fee; color: #c44; font-size: 0.8rem; padding: 6px 12px; }
-  .btn-danger:hover { background: #fdd; }
+  .upload-btn:hover { border-color: rgba(255,255,255,0.4); }
 
-  .actions { display: flex; gap: 10px; margin-top: 8px; }
+  .upload-preview {
+    width: 60px; height: 38px;
+    border-radius: 8px;
+    background-size: cover;
+    background-position: center;
+    border: 2px solid #818cf8;
+    display: none;
+  }
+
+  .upload-preview.show { display: block; }
+
+  .upload-name {
+    font-size: 0.75rem;
+    color: #64748b;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .upload-clear {
+    background: none; border: none;
+    color: #ef4444; font-size: 0.75rem;
+    cursor: pointer; font-weight: 600;
+    display: none;
+  }
+
+  .upload-clear.show { display: inline; }
+
+  .form-hint { font-size: 0.7rem; color: #475569; margin-top: 6px; }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 20px; border: none; border-radius: 10px;
+    font-size: 0.85rem; font-weight: 600; cursor: pointer;
+    transition: background 0.2s, transform 0.1s; font-family: inherit;
+  }
+
+  .btn:active { transform: scale(0.97); }
+
+  .btn-primary { background: #6366f1; color: #fff; }
+  .btn-primary:hover { background: #818cf8; }
+  .btn-secondary { background: rgba(255,255,255,0.08); color: #cbd5e1; }
+  .btn-secondary:hover { background: rgba(255,255,255,0.12); }
+  .btn-danger { background: rgba(239,68,68,0.15); color: #f87171; font-size: 0.78rem; padding: 6px 12px; }
+  .btn-danger:hover { background: rgba(239,68,68,0.25); }
+
+  .actions { display: flex; gap: 10px; margin-top: 4px; }
 
   /* Event list */
+  .section-title { font-size: 0.85rem; margin-bottom: 14px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+
   .event-item {
-    background: #fff;
-    border-radius: 12px;
-    padding: 20px 24px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    flex-wrap: wrap;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 18px 22px;
+    margin-bottom: 12px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 14px; flex-wrap: wrap;
   }
 
-  .event-info { flex: 1; min-width: 200px; }
-  .event-info .name { font-weight: 700; font-size: 1.05rem; color: #16213e; }
-  .event-info .date { font-size: 0.85rem; color: #888; margin-top: 2px; }
-  .event-info .meta { font-size: 0.78rem; color: #aaa; margin-top: 2px; }
+  .event-info { flex: 1; min-width: 180px; }
+  .event-info .name { font-weight: 700; font-size: 1rem; color: #f1f5f9; }
+  .event-info .date { font-size: 0.8rem; color: #64748b; margin-top: 2px; }
 
-  .event-color-dot {
+  .event-bg-thumb {
+    width: 36px; height: 24px;
+    border-radius: 6px;
+    background-size: cover; background-position: center;
+    border: 1px solid rgba(255,255,255,0.1);
     display: inline-block;
-    width: 12px;
-    height: 12px;
-    border-radius: 4px;
     vertical-align: middle;
-    margin-right: 4px;
-    border: 1px solid rgba(0,0,0,0.1);
+    margin-right: 6px;
   }
 
-  .event-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .event-actions { display: flex; gap: 6px; flex-wrap: wrap; }
 
-  .embed-url-area { margin-top: 12px; display: none; width: 100%; }
+  .embed-url-area { margin-top: 14px; display: none; width: 100%; }
   .embed-url-area.show { display: block; }
-  .embed-url-area label { font-size: 0.8rem; font-weight: 600; color: #555; display: block; margin-bottom: 4px; }
+  .embed-url-area label { font-size: 0.75rem; font-weight: 600; color: #64748b; display: block; margin-bottom: 4px; }
   .embed-url-row { display: flex; gap: 8px; }
   .embed-url-row input {
-    flex: 1;
-    padding: 8px 12px;
-    border: 1.5px solid #ddd;
-    border-radius: 8px;
-    font-size: 0.82rem;
-    font-family: monospace;
-    background: #fafafa;
-    color: #333;
+    flex: 1; padding: 8px 12px;
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;
+    font-size: 0.75rem; font-family: 'SF Mono', monospace;
+    background: rgba(0,0,0,0.3); color: #94a3b8;
   }
 
-  .copied-toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #16213e;
-    color: #fff;
-    padding: 10px 24px;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    opacity: 0;
-    transition: opacity 0.3s;
-    pointer-events: none;
-    z-index: 100;
+  .preview-frame {
+    width: 100%; height: 260px;
+    border: 1px solid rgba(255,255,255,0.08); border-radius: 12px;
+    margin-top: 12px; background: #0f172a;
   }
-  .copied-toast.show { opacity: 1; }
 
-  .empty-state { text-align: center; padding: 40px 20px; color: #aaa; font-size: 0.95rem; }
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: #6366f1; color: #fff; padding: 10px 24px; border-radius: 10px;
+    font-size: 0.82rem; font-weight: 600; opacity: 0; transition: opacity 0.3s;
+    pointer-events: none; z-index: 100;
+  }
+  .toast.show { opacity: 1; }
+
+  .empty-state { text-align: center; padding: 36px 20px; color: #475569; font-size: 0.85rem; }
 
   /* Location autocomplete */
   .location-wrapper { position: relative; }
-
   .location-suggestions {
     position: absolute; top: 100%; left: 0; right: 0;
-    background: #fff; border: 1.5px solid #ddd; border-top: none;
-    border-radius: 0 0 8px 8px; max-height: 200px; overflow-y: auto;
-    z-index: 50; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: none;
+    background: #1e293b; border: 1px solid rgba(255,255,255,0.1); border-top: none;
+    border-radius: 0 0 10px 10px; max-height: 180px; overflow-y: auto;
+    z-index: 50; display: none;
   }
   .location-suggestions.show { display: block; }
-
   .location-suggestion {
-    padding: 10px 14px; cursor: pointer; font-size: 0.9rem;
-    border-bottom: 1px solid #f0f0f0;
+    padding: 10px 14px; cursor: pointer; font-size: 0.85rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
     display: flex; justify-content: space-between; align-items: center;
   }
   .location-suggestion:last-child { border-bottom: none; }
-  .location-suggestion:hover { background: #f0f0f5; }
-  .location-suggestion .city-name { font-weight: 600; color: #16213e; }
-  .location-suggestion .city-detail { font-size: 0.78rem; color: #999; }
+  .location-suggestion:hover { background: rgba(255,255,255,0.06); }
+  .location-suggestion .city-name { font-weight: 600; color: #e2e8f0; }
+  .location-suggestion .city-detail { font-size: 0.72rem; color: #64748b; }
 
-  .preview-frame {
-    width: 100%; height: 220px;
-    border: 1.5px solid #e0e0e8; border-radius: 8px;
-    margin-top: 12px; background: #fff;
+  @media (max-width: 500px) {
+    .bg-grid { grid-template-columns: repeat(2, 1fr); }
   }
 </style>
 </head>
@@ -255,217 +283,266 @@
 <div class="main">
   <div class="card" id="form-card">
     <h2 id="form-title">New Event</h2>
+
     <div class="form-group">
       <label for="event-name">Event Name</label>
-      <input type="text" id="event-name" placeholder="e.g. Product Launch">
+      <input type="text" id="event-name" placeholder="e.g. Summer Festival">
     </div>
+
     <div class="form-group">
       <label>Date &amp; Time</label>
       <div class="date-hour-row">
         <input type="date" id="event-date">
-        <select id="event-hour">
-          <option value="">-- Hour --</option>
-        </select>
+        <select id="event-hour"><option value="">-- Hour --</option></select>
       </div>
     </div>
+
     <div class="form-group">
       <label for="event-location">Location (optional)</label>
       <div class="location-wrapper">
-        <input type="text" id="event-location" placeholder="e.g. Tokyo, New York, London" autocomplete="off">
+        <input type="text" id="event-location" placeholder="e.g. Tokyo, New York" autocomplete="off">
         <div class="location-suggestions" id="location-suggestions"></div>
       </div>
     </div>
+
     <div class="form-group">
-      <label>Background Color</label>
-      <div class="color-swatches" id="color-swatches">
-        <div class="color-swatch selected" data-color="FFE74C" style="background:#FFE74C;" title="Banana Cream"></div>
-        <div class="color-swatch" data-color="FF5964" style="background:#FF5964;" title="Bubblegum Pink"></div>
-        <div class="color-swatch swatch-white" data-color="FFFFFF" style="background:#FFFFFF;" title="White"></div>
-        <div class="color-swatch" data-color="38618C" style="background:#38618C;" title="Baltic Blue"></div>
-        <div class="color-swatch" data-color="35A7FF" style="background:#35A7FF;" title="Cool Sky"></div>
+      <label>Background</label>
+      <div class="bg-grid" id="bg-grid"></div>
+      <div class="upload-area">
+        <button type="button" class="upload-btn" id="upload-btn">Upload Image</button>
+        <input type="file" id="file-input" accept="image/*" hidden>
+        <div class="upload-preview" id="upload-preview"></div>
+        <span class="upload-name" id="upload-name"></span>
+        <button type="button" class="upload-clear" id="upload-clear">Remove</button>
       </div>
+      <div class="form-hint">Or paste a direct image URL below</div>
     </div>
+
     <div class="form-group">
-      <label for="event-bgimage">Background Image URL (optional)</label>
-      <input type="url" id="event-bgimage" placeholder="https://example.com/image.jpg">
-      <div class="bg-hint">Image will override the background color. Use a direct image URL.</div>
+      <label for="event-bgurl">Custom Image URL (optional)</label>
+      <input type="text" id="event-bgurl" placeholder="https://example.com/image.jpg">
     </div>
+
     <div class="actions">
       <button class="btn btn-primary" id="btn-save">Save</button>
       <button class="btn btn-secondary" id="btn-cancel" style="display:none;">Cancel</button>
     </div>
   </div>
 
-  <h2 style="font-size:1.1rem; margin-bottom:14px; color:#16213e;">Saved Events</h2>
+  <div class="section-title">Saved Events</div>
   <div id="event-list">
-    <div class="empty-state">No events yet. Create one above.</div>
+    <div class="empty-state">No events yet.</div>
   </div>
 </div>
 
-<div class="copied-toast" id="toast">Copied!</div>
+<div class="toast" id="toast">Copied!</div>
 
 <script>
 (function() {
-  const STORAGE_KEY = 'countdown_events';
-  const BG_COLORS = ['FFE74C','FF5964','FFFFFF','38618C','35A7FF'];
+  var STORAGE_KEY = 'countdown_events_v2';
+
+  var PRESETS = [
+    { key: 'ocean',    label: 'Ocean',    thumb: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300&q=60', full: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&q=80' },
+    { key: 'mountain', label: 'Mountain', thumb: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&q=60', full: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80' },
+    { key: 'sunset',   label: 'Sunset',   thumb: 'https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?w=300&q=60', full: 'https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?w=1200&q=80' },
+    { key: 'forest',   label: 'Forest',   thumb: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=300&q=60', full: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&q=80' },
+    { key: 'aurora',   label: 'Aurora',   thumb: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=300&q=60', full: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=1200&q=80' },
+    { key: 'city',     label: 'City',     thumb: 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=300&q=60', full: 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=1200&q=80' }
+  ];
 
   // Populate hour select
-  const hourSelect = document.getElementById('event-hour');
-  for (let h = 0; h < 24; h++) {
-    const opt = document.createElement('option');
+  var hourSelect = document.getElementById('event-hour');
+  for (var h = 0; h < 24; h++) {
+    var opt = document.createElement('option');
     opt.value = String(h).padStart(2, '0');
     opt.textContent = String(h).padStart(2, '0') + ':00';
     hourSelect.appendChild(opt);
   }
 
-  function loadEvents() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
-    catch { return []; }
-  }
+  // Render bg grid
+  var bgGrid = document.getElementById('bg-grid');
+  bgGrid.innerHTML = PRESETS.map(function(p) {
+    return '<div class="bg-option' + (p.key === 'ocean' ? ' selected' : '') + '" data-key="' + p.key + '" style="background-image:url(' + p.thumb + ')"><div class="bg-label">' + p.label + '</div></div>';
+  }).join('');
 
-  function saveEvents(events) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
-  }
+  var selectedBg = 'ocean';
+  var uploadedData = null;
 
-  function generateId() {
-    return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-  }
+  bgGrid.addEventListener('click', function(e) {
+    var opt = e.target.closest('.bg-option');
+    if (!opt) return;
+    bgGrid.querySelectorAll('.bg-option').forEach(function(o) { o.classList.remove('selected'); });
+    opt.classList.add('selected');
+    selectedBg = opt.dataset.key;
+    uploadedData = null;
+    uploadPreview.classList.remove('show');
+    uploadClear.classList.remove('show');
+    uploadName.textContent = '';
+  });
 
-  function formatDate(dateStr, hour) {
-    const d = new Date(dateStr + 'T' + hour + ':00');
-    return d.toLocaleString('ja-JP', {
-      year: 'numeric', month: '2-digit', day: '2-digit',
-      hour: '2-digit', minute: '2-digit'
+  // File upload
+  var uploadBtn = document.getElementById('upload-btn');
+  var fileInput = document.getElementById('file-input');
+  var uploadPreview = document.getElementById('upload-preview');
+  var uploadName = document.getElementById('upload-name');
+  var uploadClear = document.getElementById('upload-clear');
+
+  uploadBtn.addEventListener('click', function() { fileInput.click(); });
+
+  fileInput.addEventListener('change', function() {
+    var file = fileInput.files[0];
+    if (!file) return;
+    compressImage(file, 1200, 0.7).then(function(dataUrl) {
+      uploadedData = dataUrl;
+      selectedBg = null;
+      bgGrid.querySelectorAll('.bg-option').forEach(function(o) { o.classList.remove('selected'); });
+      uploadPreview.style.backgroundImage = 'url(' + dataUrl + ')';
+      uploadPreview.classList.add('show');
+      uploadName.textContent = file.name;
+      uploadClear.classList.add('show');
+    });
+  });
+
+  uploadClear.addEventListener('click', function() {
+    uploadedData = null;
+    fileInput.value = '';
+    uploadPreview.classList.remove('show');
+    uploadName.textContent = '';
+    uploadClear.classList.remove('show');
+    // reselect first preset
+    selectedBg = 'ocean';
+    bgGrid.querySelector('[data-key="ocean"]').classList.add('selected');
+  });
+
+  function compressImage(file, maxW, quality) {
+    return new Promise(function(resolve) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var img = new Image();
+        img.onload = function() {
+          var canvas = document.createElement('canvas');
+          var w = img.width, ht = img.height;
+          if (w > maxW) { ht = ht * maxW / w; w = maxW; }
+          canvas.width = w; canvas.height = ht;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, ht);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
     });
   }
 
-  function getEmbedUrl(event) {
-    const base = new URL('embed.html', window.location.href).href;
-    const p = { name: event.name, date: event.date + 'T' + event.hour + ':00' };
-    if (event.location) p.location = event.location;
-    if (event.bg) p.bg = event.bg;
-    if (event.bgimage) p.bgimage = event.bgimage;
+  function loadEvents() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+    catch(e) { return []; }
+  }
+
+  function saveEventsData(events) { localStorage.setItem(STORAGE_KEY, JSON.stringify(events)); }
+
+  function generateId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+
+  function formatDate(dateStr, hour) {
+    var d = new Date(dateStr + 'T' + hour + ':00');
+    return d.toLocaleString('ja-JP', { year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit' });
+  }
+
+  function getEmbedUrl(ev) {
+    var base = new URL('embed.html', window.location.href).href;
+    var p = { name: ev.name, date: ev.date + 'T' + ev.hour + ':00' };
+    if (ev.location) p.location = ev.location;
+    if (ev.bgimage) {
+      p.bgimage = ev.bgimage;
+    } else if (ev.bgPreset) {
+      p.bg = ev.bgPreset;
+    }
     return base + '?' + new URLSearchParams(p).toString();
   }
 
+  function getBgThumbUrl(ev) {
+    if (ev.bgimage) return ev.bgimage;
+    var preset = PRESETS.find(function(p) { return p.key === ev.bgPreset; });
+    return preset ? preset.thumb : PRESETS[0].thumb;
+  }
+
   function escapeHtml(str) {
-    const div = document.createElement('div');
+    var div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
   }
 
-  let editingId = null;
-  let selectedColor = 'FFE74C';
+  var editingId = null;
+  var nameInput = document.getElementById('event-name');
+  var dateInput = document.getElementById('event-date');
+  var locationInput = document.getElementById('event-location');
+  var bgurlInput = document.getElementById('event-bgurl');
+  var suggestionsEl = document.getElementById('location-suggestions');
+  var btnSave = document.getElementById('btn-save');
+  var btnCancel = document.getElementById('btn-cancel');
+  var formTitle = document.getElementById('form-title');
+  var eventList = document.getElementById('event-list');
+  var toast = document.getElementById('toast');
 
-  const nameInput = document.getElementById('event-name');
-  const dateInput = document.getElementById('event-date');
-  const locationInput = document.getElementById('event-location');
-  const bgimageInput = document.getElementById('event-bgimage');
-  const suggestionsEl = document.getElementById('location-suggestions');
-  const swatchContainer = document.getElementById('color-swatches');
-  const btnSave = document.getElementById('btn-save');
-  const btnCancel = document.getElementById('btn-cancel');
-  const formTitle = document.getElementById('form-title');
-  const eventList = document.getElementById('event-list');
-  const toast = document.getElementById('toast');
-
-  // --- Color swatches ---
-  swatchContainer.addEventListener('click', (e) => {
-    const swatch = e.target.closest('.color-swatch');
-    if (!swatch) return;
-    swatchContainer.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
-    swatch.classList.add('selected');
-    selectedColor = swatch.dataset.color;
-  });
-
-  // --- Location autocomplete ---
-  let debounceTimer = null;
-
-  locationInput.addEventListener('input', () => {
+  // Location autocomplete
+  var debounceTimer = null;
+  locationInput.addEventListener('input', function() {
     clearTimeout(debounceTimer);
-    const query = locationInput.value.trim();
-    if (query.length < 2) { suggestionsEl.classList.remove('show'); return; }
-    debounceTimer = setTimeout(() => fetchSuggestions(query), 300);
+    var q = locationInput.value.trim();
+    if (q.length < 2) { suggestionsEl.classList.remove('show'); return; }
+    debounceTimer = setTimeout(function() { fetchSuggestions(q); }, 300);
   });
-
-  locationInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') suggestionsEl.classList.remove('show');
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.location-wrapper')) suggestionsEl.classList.remove('show');
-  });
+  locationInput.addEventListener('keydown', function(e) { if (e.key === 'Escape') suggestionsEl.classList.remove('show'); });
+  document.addEventListener('click', function(e) { if (!e.target.closest('.location-wrapper')) suggestionsEl.classList.remove('show'); });
 
   async function fetchSuggestions(query) {
     try {
-      const res = await fetch(
-        'https://geocoding-api.open-meteo.com/v1/search?name=' +
-        encodeURIComponent(query) + '&count=5&language=en'
-      );
-      const data = await res.json();
-      if (!data.results || data.results.length === 0) { suggestionsEl.classList.remove('show'); return; }
-      suggestionsEl.innerHTML = data.results.map(r => {
-        const parts = [r.admin1, r.country].filter(Boolean);
-        return `<div class="location-suggestion" data-name="${escapeHtml(r.name)}, ${escapeHtml(r.country || '')}">
-          <span class="city-name">${escapeHtml(r.name)}</span>
-          <span class="city-detail">${escapeHtml(parts.join(', '))}</span>
-        </div>`;
+      var res = await fetch('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(query)+'&count=5&language=en');
+      var data = await res.json();
+      if (!data.results||!data.results.length) { suggestionsEl.classList.remove('show'); return; }
+      suggestionsEl.innerHTML = data.results.map(function(r) {
+        var parts = [r.admin1, r.country].filter(Boolean);
+        return '<div class="location-suggestion" data-name="'+escapeHtml(r.name)+', '+escapeHtml(r.country||'')+'"><span class="city-name">'+escapeHtml(r.name)+'</span><span class="city-detail">'+escapeHtml(parts.join(', '))+'</span></div>';
       }).join('');
       suggestionsEl.classList.add('show');
-    } catch { suggestionsEl.classList.remove('show'); }
+    } catch(e) { suggestionsEl.classList.remove('show'); }
   }
 
-  suggestionsEl.addEventListener('click', (e) => {
-    const item = e.target.closest('.location-suggestion');
+  suggestionsEl.addEventListener('click', function(e) {
+    var item = e.target.closest('.location-suggestion');
     if (item) { locationInput.value = item.dataset.name; suggestionsEl.classList.remove('show'); }
   });
 
   function showToast(msg) {
     toast.textContent = msg || 'Copied!';
     toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 1600);
+    setTimeout(function() { toast.classList.remove('show'); }, 1600);
   }
 
   function render() {
-    const events = loadEvents();
-    if (events.length === 0) {
-      eventList.innerHTML = '<div class="empty-state">No events yet. Create one above.</div>';
-      return;
-    }
-
-    eventList.innerHTML = events.map(ev => {
-      const bgColor = ev.bg || 'FFFFFF';
-      const hasBgImage = ev.bgimage ? ' / Image set' : '';
-      return `
-      <div class="event-item" data-id="${ev.id}">
-        <div class="event-info">
-          <div class="name">${escapeHtml(ev.name)}</div>
-          <div class="date">${formatDate(ev.date, ev.hour)}${ev.location ? ' / ' + escapeHtml(ev.location) : ''}</div>
-          <div class="meta"><span class="event-color-dot" style="background:#${bgColor};"></span>#${bgColor}${hasBgImage}</div>
-        </div>
-        <div class="event-actions">
-          <button class="btn btn-secondary btn-embed" data-id="${ev.id}">Embed URL</button>
-          <button class="btn btn-secondary btn-preview" data-id="${ev.id}">Preview</button>
-          <button class="btn btn-secondary btn-edit" data-id="${ev.id}">Edit</button>
-          <button class="btn btn-danger btn-delete" data-id="${ev.id}">Delete</button>
-        </div>
-        <div class="embed-url-area" id="embed-${ev.id}">
-          <label>Notion embed URL (copy this):</label>
-          <div class="embed-url-row">
-            <input type="text" readonly value="${escapeHtml(getEmbedUrl(ev))}">
-            <button class="btn btn-secondary btn-copy" data-id="${ev.id}">Copy</button>
-          </div>
-          <iframe class="preview-frame" id="preview-frame-${ev.id}" style="display:none;"></iframe>
-        </div>
-      </div>`;
+    var events = loadEvents();
+    if (!events.length) { eventList.innerHTML = '<div class="empty-state">No events yet.</div>'; return; }
+    eventList.innerHTML = events.map(function(ev) {
+      return '<div class="event-item" data-id="'+ev.id+'">'+
+        '<div class="event-info">'+
+          '<div class="name"><span class="event-bg-thumb" style="background-image:url('+escapeHtml(getBgThumbUrl(ev))+')"></span>'+escapeHtml(ev.name)+'</div>'+
+          '<div class="date">'+formatDate(ev.date,ev.hour)+(ev.location?' / '+escapeHtml(ev.location):'')+'</div>'+
+        '</div>'+
+        '<div class="event-actions">'+
+          '<button class="btn btn-secondary btn-embed" data-id="'+ev.id+'">Embed URL</button>'+
+          '<button class="btn btn-secondary btn-preview" data-id="'+ev.id+'">Preview</button>'+
+          '<button class="btn btn-secondary btn-edit" data-id="'+ev.id+'">Edit</button>'+
+          '<button class="btn btn-danger btn-delete" data-id="'+ev.id+'">Delete</button>'+
+        '</div>'+
+        '<div class="embed-url-area" id="embed-'+ev.id+'">'+
+          '<label>Notion embed URL:</label>'+
+          '<div class="embed-url-row">'+
+            '<input type="text" readonly value="'+escapeHtml(getEmbedUrl(ev))+'">'+
+            '<button class="btn btn-secondary btn-copy" data-id="'+ev.id+'">Copy</button>'+
+          '</div>'+
+          '<iframe class="preview-frame" id="preview-frame-'+ev.id+'" style="display:none;"></iframe>'+
+        '</div>'+
+      '</div>';
     }).join('');
-  }
-
-  function selectSwatch(color) {
-    selectedColor = color;
-    swatchContainer.querySelectorAll('.color-swatch').forEach(s => {
-      s.classList.toggle('selected', s.dataset.color === color);
-    });
   }
 
   function resetForm() {
@@ -474,42 +551,51 @@
     dateInput.value = '';
     hourSelect.value = '';
     locationInput.value = '';
-    bgimageInput.value = '';
-    selectSwatch('FFE74C');
+    bgurlInput.value = '';
+    uploadedData = null;
+    fileInput.value = '';
+    uploadPreview.classList.remove('show');
+    uploadName.textContent = '';
+    uploadClear.classList.remove('show');
+    selectedBg = 'ocean';
+    bgGrid.querySelectorAll('.bg-option').forEach(function(o) { o.classList.toggle('selected', o.dataset.key === 'ocean'); });
     formTitle.textContent = 'New Event';
     btnSave.textContent = 'Save';
     btnCancel.style.display = 'none';
   }
 
-  btnSave.addEventListener('click', () => {
-    const name = nameInput.value.trim();
-    const date = dateInput.value;
-    const hour = hourSelect.value;
-    const location = locationInput.value.trim();
-    const bgimage = bgimageInput.value.trim();
+  btnSave.addEventListener('click', function() {
+    var name = nameInput.value.trim();
+    var date = dateInput.value;
+    var hour = hourSelect.value;
+    var location = locationInput.value.trim();
+    var bgurl = bgurlInput.value.trim();
 
-    if (!name || !date || !hour) {
-      showToast('Name, date, and hour are required');
-      return;
+    if (!name || !date || !hour) { showToast('Name, date, and hour are required'); return; }
+
+    var bgPreset = null;
+    var bgimage = null;
+
+    if (uploadedData) {
+      bgimage = uploadedData;
+    } else if (bgurl) {
+      bgimage = bgurl;
+    } else {
+      bgPreset = selectedBg || 'ocean';
     }
 
-    const events = loadEvents();
+    var events = loadEvents();
 
     if (editingId) {
-      const idx = events.findIndex(e => e.id === editingId);
+      var idx = events.findIndex(function(e) { return e.id === editingId; });
       if (idx !== -1) {
-        events[idx].name = name;
-        events[idx].date = date;
-        events[idx].hour = hour;
-        events[idx].location = location;
-        events[idx].bg = selectedColor;
-        events[idx].bgimage = bgimage;
+        events[idx] = { id: editingId, name:name, date:date, hour:hour, location:location, bgPreset:bgPreset, bgimage:bgimage };
       }
     } else {
-      events.push({ id: generateId(), name, date, hour, location, bg: selectedColor, bgimage });
+      events.push({ id: generateId(), name:name, date:date, hour:hour, location:location, bgPreset:bgPreset, bgimage:bgimage });
     }
 
-    saveEvents(events);
+    saveEventsData(events);
     resetForm();
     render();
     showToast(editingId ? 'Updated!' : 'Saved!');
@@ -517,29 +603,28 @@
 
   btnCancel.addEventListener('click', resetForm);
 
-  eventList.addEventListener('click', (e) => {
-    const btn = e.target.closest('button');
+  eventList.addEventListener('click', function(e) {
+    var btn = e.target.closest('button');
     if (!btn) return;
-    const id = btn.dataset.id;
-    const events = loadEvents();
+    var id = btn.dataset.id;
+    var events = loadEvents();
 
     if (btn.classList.contains('btn-embed')) {
-      const area = document.getElementById('embed-' + id);
+      var area = document.getElementById('embed-' + id);
       area.classList.toggle('show');
-      const frame = document.getElementById('preview-frame-' + id);
+      var frame = document.getElementById('preview-frame-' + id);
       if (frame) frame.style.display = 'none';
     }
 
     if (btn.classList.contains('btn-copy')) {
-      const ev = events.find(e => e.id === id);
-      if (ev) navigator.clipboard.writeText(getEmbedUrl(ev)).then(() => showToast('Copied!'));
+      var ev = events.find(function(e) { return e.id === id; });
+      if (ev) navigator.clipboard.writeText(getEmbedUrl(ev)).then(function() { showToast('Copied!'); });
     }
 
     if (btn.classList.contains('btn-preview')) {
-      const area = document.getElementById('embed-' + id);
-      area.classList.add('show');
-      const frame = document.getElementById('preview-frame-' + id);
-      const ev = events.find(e => e.id === id);
+      document.getElementById('embed-' + id).classList.add('show');
+      var frame = document.getElementById('preview-frame-' + id);
+      var ev = events.find(function(e) { return e.id === id; });
       if (frame && ev) {
         frame.style.display = frame.style.display === 'none' ? 'block' : 'none';
         if (frame.style.display === 'block') frame.src = getEmbedUrl(ev);
@@ -547,15 +632,37 @@
     }
 
     if (btn.classList.contains('btn-edit')) {
-      const ev = events.find(e => e.id === id);
+      var ev = events.find(function(e) { return e.id === id; });
       if (ev) {
         editingId = ev.id;
         nameInput.value = ev.name;
         dateInput.value = ev.date;
         hourSelect.value = ev.hour;
         locationInput.value = ev.location || '';
-        bgimageInput.value = ev.bgimage || '';
-        selectSwatch(ev.bg || 'FFE74C');
+        bgurlInput.value = '';
+
+        bgGrid.querySelectorAll('.bg-option').forEach(function(o) { o.classList.remove('selected'); });
+        uploadedData = null;
+        uploadPreview.classList.remove('show');
+        uploadName.textContent = '';
+        uploadClear.classList.remove('show');
+
+        if (ev.bgPreset) {
+          selectedBg = ev.bgPreset;
+          var s = bgGrid.querySelector('[data-key="'+ev.bgPreset+'"]');
+          if (s) s.classList.add('selected');
+        } else if (ev.bgimage && ev.bgimage.startsWith('data:')) {
+          uploadedData = ev.bgimage;
+          uploadPreview.style.backgroundImage = 'url(' + ev.bgimage + ')';
+          uploadPreview.classList.add('show');
+          uploadName.textContent = 'Uploaded image';
+          uploadClear.classList.add('show');
+          selectedBg = null;
+        } else if (ev.bgimage) {
+          bgurlInput.value = ev.bgimage;
+          selectedBg = null;
+        }
+
         formTitle.textContent = 'Edit Event';
         btnSave.textContent = 'Update';
         btnCancel.style.display = 'inline-flex';
@@ -564,9 +671,9 @@
     }
 
     if (btn.classList.contains('btn-delete')) {
-      if (confirm(`"${events.find(e => e.id === id)?.name}" を削除しますか?`)) {
-        const filtered = events.filter(e => e.id !== id);
-        saveEvents(filtered);
+      var ev = events.find(function(e) { return e.id === id; });
+      if (ev && confirm('"'+ev.name+'" を削除しますか?')) {
+        saveEventsData(events.filter(function(e) { return e.id !== id; }));
         render();
         if (editingId === id) resetForm();
         showToast('Deleted');
