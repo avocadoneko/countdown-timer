@@ -167,12 +167,17 @@
   const date = params.get('date');
   const location = params.get('location');
   const bgPreset = params.get('bg');
-  const bgImage = params.get('bgimage');
+  const bgKey = params.get('bgkey');
 
   // Apply background
   const bgEl = document.getElementById('bg');
-  if (bgImage) {
-    bgEl.style.backgroundImage = 'url(' + bgImage + ')';
+  if (bgKey) {
+    var storedBg = localStorage.getItem('countdown_bg_' + bgKey);
+    if (storedBg) {
+      bgEl.style.backgroundImage = 'url(' + storedBg + ')';
+    } else {
+      bgEl.style.backgroundImage = 'url(' + PRESETS.ocean + ')';
+    }
   } else if (bgPreset && PRESETS[bgPreset]) {
     bgEl.style.backgroundImage = 'url(' + PRESETS[bgPreset] + ')';
   } else {

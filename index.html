@@ -452,7 +452,10 @@
     var p = { name: ev.name, date: ev.date + 'T' + ev.hour + ':00' };
     if (ev.location) p.location = ev.location;
     if (ev.bgimage) {
-      p.bgimage = ev.bgimage;
+      // Store image in localStorage and pass key instead of data URI
+      var bgKey = 'countdown_bg_' + ev.id;
+      localStorage.setItem(bgKey, ev.bgimage);
+      p.bgkey = ev.id;
     } else if (ev.bgPreset) {
       p.bg = ev.bgPreset;
     }
@@ -673,6 +676,7 @@
     if (btn.classList.contains('btn-delete')) {
       var ev = events.find(function(e) { return e.id === id; });
       if (ev && confirm('"'+ev.name+'" を削除しますか?')) {
+        localStorage.removeItem('countdown_bg_' + ev.id);
         saveEventsData(events.filter(function(e) { return e.id !== id; }));
         render();
         if (editingId === id) resetForm();
