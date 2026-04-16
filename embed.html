@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Countdown Timer</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
@@ -12,126 +14,171 @@
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans JP', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Noto Sans JP', sans-serif;
     background: transparent;
-    color: #1a1a2e;
+    color: #1e293b;
     overflow: hidden;
   }
 
   .container {
     text-align: center;
-    padding: 24px;
+    padding: 28px 24px;
     width: 100%;
-    max-width: 600px;
+    max-width: 520px;
+  }
+
+  /* Header: event name + date */
+  .event-header {
+    margin-bottom: 24px;
   }
 
   .event-name {
-    font-size: 1.4rem;
-    font-weight: 700;
-    margin-bottom: 16px;
-    color: #16213e;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+  }
+
+  .event-date {
+    margin-top: 6px;
+    font-size: 0.82rem;
+    color: #64748b;
+    font-weight: 500;
     letter-spacing: 0.02em;
   }
 
+  /* Divider */
+  .divider {
+    width: 40px;
+    height: 3px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border-radius: 2px;
+    margin: 0 auto 24px;
+  }
+
+  /* Countdown */
   .countdown {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     justify-content: center;
-    flex-wrap: wrap;
   }
 
   .unit {
-    background: #f0f0f5;
-    border-radius: 12px;
-    padding: 16px 12px;
-    min-width: 80px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    flex: 1;
+    max-width: 90px;
+    background: linear-gradient(145deg, #f8fafc, #f1f5f9);
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 14px 4px 12px;
   }
 
   .unit .value {
-    font-size: 2.4rem;
+    font-size: 2rem;
     font-weight: 800;
     line-height: 1;
-    color: #0f3460;
+    color: #1e293b;
     font-variant-numeric: tabular-nums;
   }
 
   .unit .label {
-    font-size: 0.7rem;
+    font-size: 0.6rem;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: #888;
+    letter-spacing: 0.12em;
+    color: #94a3b8;
     margin-top: 6px;
-  }
-
-  .finished {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: #e94560;
-    animation: pulse 1.5s ease-in-out infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-  }
-
-  .error-msg {
-    color: #999;
-    font-size: 0.95rem;
-  }
-
-  /* Weather */
-  .weather {
-    margin-top: 18px;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    background: #f0f0f5;
-    border-radius: 10px;
-    padding: 10px 18px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  }
-
-  .weather-icon {
-    font-size: 1.6rem;
-    line-height: 1;
-  }
-
-  .weather-info {
-    text-align: left;
-  }
-
-  .weather-desc {
-    font-size: 0.8rem;
-    color: #555;
     font-weight: 600;
   }
 
-  .weather-temp {
-    font-size: 0.85rem;
-    color: #0f3460;
+  .separator {
+    display: flex;
+    align-items: center;
+    font-size: 1.4rem;
     font-weight: 700;
-    margin-top: 1px;
+    color: #cbd5e1;
+    padding-bottom: 8px;
   }
 
-  .weather-location {
-    font-size: 0.7rem;
-    color: #999;
+  /* Finished state */
+  .finished {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #8b5cf6;
+    padding: 20px 0;
+  }
+
+  .finished .sub {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    font-weight: 500;
+    margin-top: 4px;
+  }
+
+  /* Weather */
+  .weather-section {
+    margin-top: 20px;
+  }
+
+  .weather-card {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(145deg, #f8fafc, #f1f5f9);
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px 20px;
+  }
+
+  .weather-icon {
+    font-size: 1.8rem;
+    line-height: 1;
+  }
+
+  .weather-body {
+    text-align: left;
+  }
+
+  .weather-label {
+    font-size: 0.65rem;
+    color: #94a3b8;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 2px;
+  }
+
+  .weather-desc {
+    font-size: 0.88rem;
+    color: #1e293b;
+    font-weight: 700;
+  }
+
+  .weather-temp {
+    font-size: 0.78rem;
+    color: #64748b;
+    font-weight: 600;
     margin-top: 1px;
   }
 
   .weather-note {
-    margin-top: 14px;
-    font-size: 0.75rem;
-    color: #aaa;
+    margin-top: 16px;
+    font-size: 0.72rem;
+    color: #94a3b8;
+    font-weight: 500;
   }
 
-  /* Notion embed friendly sizing */
+  .error-msg {
+    color: #94a3b8;
+    font-size: 0.9rem;
+  }
+
+  /* Small screens */
   @media (max-width: 400px) {
-    .unit { min-width: 60px; padding: 12px 8px; }
-    .unit .value { font-size: 1.8rem; }
+    .container { padding: 20px 16px; }
+    .unit { padding: 12px 2px 10px; border-radius: 10px; }
+    .unit .value { font-size: 1.6rem; }
     .event-name { font-size: 1.1rem; }
+    .separator { font-size: 1.1rem; }
   }
 </style>
 </head>
@@ -146,9 +193,7 @@
   const date = params.get('date');
   const location = params.get('location');
 
-  if (!name || !date) {
-    return;
-  }
+  if (!name || !date) return;
 
   const targetDate = new Date(date);
   if (isNaN(targetDate.getTime())) {
@@ -162,11 +207,35 @@
     return div.innerHTML;
   }
 
+  const WEEKDAYS = ['\u65E5', '\u6708', '\u706B', '\u6C34', '\u6728', '\u91D1', '\u571F'];
+
+  function formatEventDate(d) {
+    const y = d.getFullYear();
+    const m = d.getMonth() + 1;
+    const day = d.getDate();
+    const w = WEEKDAYS[d.getDay()];
+    const h = String(d.getHours()).padStart(2, '0');
+    const min = String(d.getMinutes()).padStart(2, '0');
+    return `${y}\u5E74${m}\u6708${day}\u65E5(${w}) ${h}:${min}`;
+  }
+
+  function formatWeatherDate(dateStr) {
+    const d = new Date(dateStr + 'T00:00:00');
+    const m = d.getMonth() + 1;
+    const day = d.getDate();
+    const w = WEEKDAYS[d.getDay()];
+    return `${m}/${day}(${w})`;
+  }
+
   const app = document.getElementById('app');
   app.innerHTML = `
-    <div class="event-name">${escapeHtml(name)}</div>
-    <div class="countdown" id="countdown"></div>
-    <div id="weather-container"></div>
+    <div class="event-header">
+      <div class="event-name">${escapeHtml(name)}</div>
+      <div class="event-date">${formatEventDate(targetDate)}</div>
+    </div>
+    <div class="divider"></div>
+    <div id="countdown" class="countdown"></div>
+    <div id="weather-container" class="weather-section"></div>
   `;
 
   // --- Countdown ---
@@ -176,7 +245,7 @@
     const el = document.getElementById('countdown');
 
     if (diff <= 0) {
-      el.innerHTML = '<div class="finished">Event Started!</div>';
+      el.innerHTML = '<div class="finished">Event Started!<div class="sub">' + formatEventDate(targetDate) + '</div></div>';
       return;
     }
 
@@ -187,8 +256,11 @@
 
     el.innerHTML = `
       <div class="unit"><div class="value">${days}</div><div class="label">Days</div></div>
+      <div class="separator">:</div>
       <div class="unit"><div class="value">${String(hours).padStart(2, '0')}</div><div class="label">Hours</div></div>
+      <div class="separator">:</div>
       <div class="unit"><div class="value">${String(minutes).padStart(2, '0')}</div><div class="label">Min</div></div>
+      <div class="separator">:</div>
       <div class="unit"><div class="value">${String(seconds).padStart(2, '0')}</div><div class="label">Sec</div></div>
     `;
   }
@@ -199,8 +271,6 @@
   // --- Weather ---
   if (!location) return;
 
-  // WMO code -> [日本語, emoji, カテゴリ]
-  // カテゴリ: 'clear','cloudy','rain','snow','storm','fog' で「のち」判定に使う
   const WMO = {
     0:  ['\u6674\u308C',           '\u2600\uFE0F',           'clear'],
     1:  ['\u6674\u308C',           '\uD83C\uDF24\uFE0F',     'clear'],
@@ -234,9 +304,7 @@
 
   function getWmo(code) { return WMO[code] || ['\u4E0D\u660E', '\uD83C\uDF10', 'unknown']; }
 
-  // 時間帯別コードから「晴れのち曇り」形式の説明文を作る
   function summarizeHourly(codes) {
-    // 6-12時 = 午前, 12-18時 = 午後 として前半/後半に分ける
     const first = codes.slice(0, Math.ceil(codes.length / 2));
     const second = codes.slice(Math.ceil(codes.length / 2));
 
@@ -262,7 +330,6 @@
     if (catFirst === catSecond) {
       return { desc: catToLabel(catFirst), icon: catToIcon(catFirst) };
     }
-    // 「晴れのち曇り」形式
     return { desc: catToLabel(catFirst) + '\u306E\u3061' + catToLabel(catSecond), icon: catToIcon(catFirst) };
   }
 
@@ -270,7 +337,6 @@
     const container = document.getElementById('weather-container');
 
     try {
-      // 1. Geocode (タイムゾーン情報も取得)
       const geoRes = await fetch(
         'https://geocoding-api.open-meteo.com/v1/search?name=' +
         encodeURIComponent(location) + '&count=1&language=en'
@@ -283,11 +349,8 @@
       }
 
       const { latitude, longitude, name: cityName, country, timezone } = geoData.results[0];
-
-      // URLパラメータの日付文字列から直接日付部分を取得（UTC変換による日付ズレを防ぐ）
       const eventDateStr = date.slice(0, 10);
 
-      // 2. 予報範囲チェック（16日先まで）
       const now = new Date();
       const diffDays = Math.floor((targetDate - now) / (1000 * 60 * 60 * 24));
 
@@ -301,7 +364,6 @@
 
       if (diffDays < 0) return;
 
-      // 3. 時間帯別天気 + 日別気温を取得（開催地タイムゾーンを明示指定）
       const weatherRes = await fetch(
         'https://api.open-meteo.com/v1/forecast?latitude=' + latitude +
         '&longitude=' + longitude +
@@ -321,18 +383,18 @@
       const tempMax = Math.round(weatherData.daily.temperature_2m_max[0]);
       const tempMin = Math.round(weatherData.daily.temperature_2m_min[0]);
 
-      // 6:00〜18:00 の時間帯コードで日中の天気を判定
       const hourlyCodes = weatherData.hourly.weather_code;
       const daytimeCodes = hourlyCodes.slice(6, 18);
       const { desc, icon } = summarizeHourly(daytimeCodes);
 
+      const dateLabel = formatWeatherDate(eventDateStr);
+
       container.innerHTML = `
-        <div class="weather">
+        <div class="weather-card">
           <div class="weather-icon">${icon}</div>
-          <div class="weather-info">
-            <div class="weather-desc">${desc}</div>
-            <div class="weather-temp">${tempMin}\u00B0C / ${tempMax}\u00B0C</div>
-            <div class="weather-location">${escapeHtml(cityName)}, ${escapeHtml(country)}</div>
+          <div class="weather-body">
+            <div class="weather-label">${dateLabel} ${escapeHtml(cityName)} \u306E\u5929\u6C17</div>
+            <div class="weather-desc">${desc} ${tempMin}\u00B0 / ${tempMax}\u00B0</div>
           </div>
         </div>
       `;
