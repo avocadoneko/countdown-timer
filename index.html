@@ -20,16 +20,8 @@
     padding: 24px 32px;
   }
 
-  .header h1 {
-    font-size: 1.5rem;
-    font-weight: 700;
-  }
-
-  .header p {
-    font-size: 0.85rem;
-    color: #aab;
-    margin-top: 4px;
-  }
+  .header h1 { font-size: 1.5rem; font-weight: 700; }
+  .header p { font-size: 0.85rem; color: #aab; margin-top: 4px; }
 
   .main {
     max-width: 720px;
@@ -37,7 +29,6 @@
     padding: 0 20px;
   }
 
-  /* Form */
   .card {
     background: #fff;
     border-radius: 12px;
@@ -46,15 +37,9 @@
     margin-bottom: 24px;
   }
 
-  .card h2 {
-    font-size: 1.1rem;
-    margin-bottom: 20px;
-    color: #16213e;
-  }
+  .card h2 { font-size: 1.1rem; margin-bottom: 20px; color: #16213e; }
 
-  .form-group {
-    margin-bottom: 16px;
-  }
+  .form-group { margin-bottom: 16px; }
 
   .form-group label {
     display: block;
@@ -64,19 +49,83 @@
     color: #555;
   }
 
-  .form-group input {
-    width: 100%;
+  .form-group input, .form-group select {
     padding: 10px 14px;
     border: 1.5px solid #ddd;
     border-radius: 8px;
     font-size: 0.95rem;
     transition: border-color 0.2s;
     font-family: inherit;
+    background: #fff;
   }
 
-  .form-group input:focus {
+  .form-group input:focus, .form-group select:focus {
     outline: none;
     border-color: #0f3460;
+  }
+
+  .form-group input[type="text"],
+  .form-group input[type="url"] { width: 100%; }
+
+  /* Date + Hour row */
+  .date-hour-row {
+    display: flex;
+    gap: 10px;
+  }
+
+  .date-hour-row input[type="date"] { flex: 1; }
+
+  .date-hour-row select {
+    width: 100px;
+  }
+
+  /* Color swatches */
+  .color-swatches {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .color-swatch {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    border: 3px solid transparent;
+    cursor: pointer;
+    transition: border-color 0.2s, transform 0.15s;
+    position: relative;
+  }
+
+  .color-swatch:hover { transform: scale(1.1); }
+
+  .color-swatch.selected {
+    border-color: #0f3460;
+  }
+
+  .color-swatch.selected::after {
+    content: '\2713';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .color-swatch[data-color="FFE74C"].selected::after,
+  .color-swatch[data-color="FFFFFF"].selected::after { color: #333; }
+  .color-swatch[data-color="FF5964"].selected::after,
+  .color-swatch[data-color="38618C"].selected::after,
+  .color-swatch[data-color="35A7FF"].selected::after { color: #fff; }
+
+  .swatch-white { border-color: #ddd; }
+  .swatch-white.selected { border-color: #0f3460; }
+
+  .bg-hint {
+    font-size: 0.75rem;
+    color: #999;
+    margin-top: 6px;
   }
 
   .btn {
@@ -93,34 +142,14 @@
     font-family: inherit;
   }
 
-  .btn-primary {
-    background: #0f3460;
-    color: #fff;
-  }
-
+  .btn-primary { background: #0f3460; color: #fff; }
   .btn-primary:hover { background: #16213e; }
-
-  .btn-secondary {
-    background: #e8e8f0;
-    color: #333;
-  }
-
+  .btn-secondary { background: #e8e8f0; color: #333; }
   .btn-secondary:hover { background: #d8d8e4; }
-
-  .btn-danger {
-    background: #fee;
-    color: #c44;
-    font-size: 0.8rem;
-    padding: 6px 12px;
-  }
-
+  .btn-danger { background: #fee; color: #c44; font-size: 0.8rem; padding: 6px 12px; }
   .btn-danger:hover { background: #fdd; }
 
-  .actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 8px;
-  }
+  .actions { display: flex; gap: 10px; margin-top: 8px; }
 
   /* Event list */
   .event-item {
@@ -136,52 +165,27 @@
     flex-wrap: wrap;
   }
 
-  .event-info {
-    flex: 1;
-    min-width: 200px;
+  .event-info { flex: 1; min-width: 200px; }
+  .event-info .name { font-weight: 700; font-size: 1.05rem; color: #16213e; }
+  .event-info .date { font-size: 0.85rem; color: #888; margin-top: 2px; }
+  .event-info .meta { font-size: 0.78rem; color: #aaa; margin-top: 2px; }
+
+  .event-color-dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 4px;
+    vertical-align: middle;
+    margin-right: 4px;
+    border: 1px solid rgba(0,0,0,0.1);
   }
 
-  .event-info .name {
-    font-weight: 700;
-    font-size: 1.05rem;
-    color: #16213e;
-  }
+  .event-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
-  .event-info .date {
-    font-size: 0.85rem;
-    color: #888;
-    margin-top: 2px;
-  }
-
-  .event-actions {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-
-  /* Embed URL area */
-  .embed-url-area {
-    margin-top: 12px;
-    display: none;
-  }
-
-  .embed-url-area.show {
-    display: block;
-  }
-
-  .embed-url-area label {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: #555;
-    display: block;
-    margin-bottom: 4px;
-  }
-
-  .embed-url-row {
-    display: flex;
-    gap: 8px;
-  }
-
+  .embed-url-area { margin-top: 12px; display: none; width: 100%; }
+  .embed-url-area.show { display: block; }
+  .embed-url-area label { font-size: 0.8rem; font-weight: 600; color: #555; display: block; margin-bottom: 4px; }
+  .embed-url-row { display: flex; gap: 8px; }
   .embed-url-row input {
     flex: 1;
     padding: 8px 12px;
@@ -209,77 +213,35 @@
     pointer-events: none;
     z-index: 100;
   }
-
   .copied-toast.show { opacity: 1; }
 
-  .empty-state {
-    text-align: center;
-    padding: 40px 20px;
-    color: #aaa;
-    font-size: 0.95rem;
-  }
+  .empty-state { text-align: center; padding: 40px 20px; color: #aaa; font-size: 0.95rem; }
 
   /* Location autocomplete */
-  .location-wrapper {
-    position: relative;
-  }
+  .location-wrapper { position: relative; }
 
   .location-suggestions {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: #fff;
-    border: 1.5px solid #ddd;
-    border-top: none;
-    border-radius: 0 0 8px 8px;
-    max-height: 200px;
-    overflow-y: auto;
-    z-index: 50;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    display: none;
+    position: absolute; top: 100%; left: 0; right: 0;
+    background: #fff; border: 1.5px solid #ddd; border-top: none;
+    border-radius: 0 0 8px 8px; max-height: 200px; overflow-y: auto;
+    z-index: 50; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: none;
   }
-
-  .location-suggestions.show {
-    display: block;
-  }
+  .location-suggestions.show { display: block; }
 
   .location-suggestion {
-    padding: 10px 14px;
-    cursor: pointer;
-    font-size: 0.9rem;
+    padding: 10px 14px; cursor: pointer; font-size: 0.9rem;
     border-bottom: 1px solid #f0f0f0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    display: flex; justify-content: space-between; align-items: center;
   }
+  .location-suggestion:last-child { border-bottom: none; }
+  .location-suggestion:hover { background: #f0f0f5; }
+  .location-suggestion .city-name { font-weight: 600; color: #16213e; }
+  .location-suggestion .city-detail { font-size: 0.78rem; color: #999; }
 
-  .location-suggestion:last-child {
-    border-bottom: none;
-  }
-
-  .location-suggestion:hover {
-    background: #f0f0f5;
-  }
-
-  .location-suggestion .city-name {
-    font-weight: 600;
-    color: #16213e;
-  }
-
-  .location-suggestion .city-detail {
-    font-size: 0.78rem;
-    color: #999;
-  }
-
-  /* Preview */
   .preview-frame {
-    width: 100%;
-    height: 180px;
-    border: 1.5px solid #e0e0e8;
-    border-radius: 8px;
-    margin-top: 12px;
-    background: #fff;
+    width: 100%; height: 220px;
+    border: 1.5px solid #e0e0e8; border-radius: 8px;
+    margin-top: 12px; background: #fff;
   }
 </style>
 </head>
@@ -287,11 +249,10 @@
 
 <div class="header">
   <h1>Countdown Timer</h1>
-  <p>イベントを作成して、Notionに埋め込み用URLをコピーしましょう</p>
+  <p>Create events and embed countdown timers in Notion</p>
 </div>
 
 <div class="main">
-  <!-- Create / Edit form -->
   <div class="card" id="form-card">
     <h2 id="form-title">New Event</h2>
     <div class="form-group">
@@ -299,8 +260,13 @@
       <input type="text" id="event-name" placeholder="e.g. Product Launch">
     </div>
     <div class="form-group">
-      <label for="event-date">Date &amp; Time</label>
-      <input type="datetime-local" id="event-date">
+      <label>Date &amp; Time</label>
+      <div class="date-hour-row">
+        <input type="date" id="event-date">
+        <select id="event-hour">
+          <option value="">-- Hour --</option>
+        </select>
+      </div>
     </div>
     <div class="form-group">
       <label for="event-location">Location (optional)</label>
@@ -309,13 +275,27 @@
         <div class="location-suggestions" id="location-suggestions"></div>
       </div>
     </div>
+    <div class="form-group">
+      <label>Background Color</label>
+      <div class="color-swatches" id="color-swatches">
+        <div class="color-swatch selected" data-color="FFE74C" style="background:#FFE74C;" title="Banana Cream"></div>
+        <div class="color-swatch" data-color="FF5964" style="background:#FF5964;" title="Bubblegum Pink"></div>
+        <div class="color-swatch swatch-white" data-color="FFFFFF" style="background:#FFFFFF;" title="White"></div>
+        <div class="color-swatch" data-color="38618C" style="background:#38618C;" title="Baltic Blue"></div>
+        <div class="color-swatch" data-color="35A7FF" style="background:#35A7FF;" title="Cool Sky"></div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="event-bgimage">Background Image URL (optional)</label>
+      <input type="url" id="event-bgimage" placeholder="https://example.com/image.jpg">
+      <div class="bg-hint">Image will override the background color. Use a direct image URL.</div>
+    </div>
     <div class="actions">
       <button class="btn btn-primary" id="btn-save">Save</button>
       <button class="btn btn-secondary" id="btn-cancel" style="display:none;">Cancel</button>
     </div>
   </div>
 
-  <!-- Event list -->
   <h2 style="font-size:1.1rem; margin-bottom:14px; color:#16213e;">Saved Events</h2>
   <div id="event-list">
     <div class="empty-state">No events yet. Create one above.</div>
@@ -327,13 +307,20 @@
 <script>
 (function() {
   const STORAGE_KEY = 'countdown_events';
+  const BG_COLORS = ['FFE74C','FF5964','FFFFFF','38618C','35A7FF'];
+
+  // Populate hour select
+  const hourSelect = document.getElementById('event-hour');
+  for (let h = 0; h < 24; h++) {
+    const opt = document.createElement('option');
+    opt.value = String(h).padStart(2, '0');
+    opt.textContent = String(h).padStart(2, '0') + ':00';
+    hourSelect.appendChild(opt);
+  }
 
   function loadEvents() {
-    try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-    } catch {
-      return [];
-    }
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+    catch { return []; }
   }
 
   function saveEvents(events) {
@@ -344,8 +331,8 @@
     return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
   }
 
-  function formatDate(iso) {
-    const d = new Date(iso);
+  function formatDate(dateStr, hour) {
+    const d = new Date(dateStr + 'T' + hour + ':00');
     return d.toLocaleString('ja-JP', {
       year: 'numeric', month: '2-digit', day: '2-digit',
       hour: '2-digit', minute: '2-digit'
@@ -354,10 +341,11 @@
 
   function getEmbedUrl(event) {
     const base = new URL('embed.html', window.location.href).href;
-    const p = { name: event.name, date: event.date };
+    const p = { name: event.name, date: event.date + 'T' + event.hour + ':00' };
     if (event.location) p.location = event.location;
-    const params = new URLSearchParams(p);
-    return base + '?' + params.toString();
+    if (event.bg) p.bg = event.bg;
+    if (event.bgimage) p.bgimage = event.bgimage;
+    return base + '?' + new URLSearchParams(p).toString();
   }
 
   function escapeHtml(str) {
@@ -367,11 +355,28 @@
   }
 
   let editingId = null;
+  let selectedColor = 'FFE74C';
 
   const nameInput = document.getElementById('event-name');
   const dateInput = document.getElementById('event-date');
   const locationInput = document.getElementById('event-location');
+  const bgimageInput = document.getElementById('event-bgimage');
   const suggestionsEl = document.getElementById('location-suggestions');
+  const swatchContainer = document.getElementById('color-swatches');
+  const btnSave = document.getElementById('btn-save');
+  const btnCancel = document.getElementById('btn-cancel');
+  const formTitle = document.getElementById('form-title');
+  const eventList = document.getElementById('event-list');
+  const toast = document.getElementById('toast');
+
+  // --- Color swatches ---
+  swatchContainer.addEventListener('click', (e) => {
+    const swatch = e.target.closest('.color-swatch');
+    if (!swatch) return;
+    swatchContainer.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+    swatch.classList.add('selected');
+    selectedColor = swatch.dataset.color;
+  });
 
   // --- Location autocomplete ---
   let debounceTimer = null;
@@ -379,10 +384,7 @@
   locationInput.addEventListener('input', () => {
     clearTimeout(debounceTimer);
     const query = locationInput.value.trim();
-    if (query.length < 2) {
-      suggestionsEl.classList.remove('show');
-      return;
-    }
+    if (query.length < 2) { suggestionsEl.classList.remove('show'); return; }
     debounceTimer = setTimeout(() => fetchSuggestions(query), 300);
   });
 
@@ -391,9 +393,7 @@
   });
 
   document.addEventListener('click', (e) => {
-    if (!e.target.closest('.location-wrapper')) {
-      suggestionsEl.classList.remove('show');
-    }
+    if (!e.target.closest('.location-wrapper')) suggestionsEl.classList.remove('show');
   });
 
   async function fetchSuggestions(query) {
@@ -403,10 +403,7 @@
         encodeURIComponent(query) + '&count=5&language=en'
       );
       const data = await res.json();
-      if (!data.results || data.results.length === 0) {
-        suggestionsEl.classList.remove('show');
-        return;
-      }
+      if (!data.results || data.results.length === 0) { suggestionsEl.classList.remove('show'); return; }
       suggestionsEl.innerHTML = data.results.map(r => {
         const parts = [r.admin1, r.country].filter(Boolean);
         return `<div class="location-suggestion" data-name="${escapeHtml(r.name)}, ${escapeHtml(r.country || '')}">
@@ -415,23 +412,13 @@
         </div>`;
       }).join('');
       suggestionsEl.classList.add('show');
-    } catch {
-      suggestionsEl.classList.remove('show');
-    }
+    } catch { suggestionsEl.classList.remove('show'); }
   }
 
   suggestionsEl.addEventListener('click', (e) => {
     const item = e.target.closest('.location-suggestion');
-    if (item) {
-      locationInput.value = item.dataset.name;
-      suggestionsEl.classList.remove('show');
-    }
+    if (item) { locationInput.value = item.dataset.name; suggestionsEl.classList.remove('show'); }
   });
-  const btnSave = document.getElementById('btn-save');
-  const btnCancel = document.getElementById('btn-cancel');
-  const formTitle = document.getElementById('form-title');
-  const eventList = document.getElementById('event-list');
-  const toast = document.getElementById('toast');
 
   function showToast(msg) {
     toast.textContent = msg || 'Copied!';
@@ -446,11 +433,15 @@
       return;
     }
 
-    eventList.innerHTML = events.map(ev => `
+    eventList.innerHTML = events.map(ev => {
+      const bgColor = ev.bg || 'FFFFFF';
+      const hasBgImage = ev.bgimage ? ' / Image set' : '';
+      return `
       <div class="event-item" data-id="${ev.id}">
         <div class="event-info">
           <div class="name">${escapeHtml(ev.name)}</div>
-          <div class="date">${formatDate(ev.date)}${ev.location ? ' / ' + escapeHtml(ev.location) : ''}</div>
+          <div class="date">${formatDate(ev.date, ev.hour)}${ev.location ? ' / ' + escapeHtml(ev.location) : ''}</div>
+          <div class="meta"><span class="event-color-dot" style="background:#${bgColor};"></span>#${bgColor}${hasBgImage}</div>
         </div>
         <div class="event-actions">
           <button class="btn btn-secondary btn-embed" data-id="${ev.id}">Embed URL</button>
@@ -466,15 +457,25 @@
           </div>
           <iframe class="preview-frame" id="preview-frame-${ev.id}" style="display:none;"></iframe>
         </div>
-      </div>
-    `).join('');
+      </div>`;
+    }).join('');
+  }
+
+  function selectSwatch(color) {
+    selectedColor = color;
+    swatchContainer.querySelectorAll('.color-swatch').forEach(s => {
+      s.classList.toggle('selected', s.dataset.color === color);
+    });
   }
 
   function resetForm() {
     editingId = null;
     nameInput.value = '';
     dateInput.value = '';
+    hourSelect.value = '';
     locationInput.value = '';
+    bgimageInput.value = '';
+    selectSwatch('FFE74C');
     formTitle.textContent = 'New Event';
     btnSave.textContent = 'Save';
     btnCancel.style.display = 'none';
@@ -483,9 +484,12 @@
   btnSave.addEventListener('click', () => {
     const name = nameInput.value.trim();
     const date = dateInput.value;
+    const hour = hourSelect.value;
     const location = locationInput.value.trim();
-    if (!name || !date) {
-      showToast('Please fill in all fields');
+    const bgimage = bgimageInput.value.trim();
+
+    if (!name || !date || !hour) {
+      showToast('Name, date, and hour are required');
       return;
     }
 
@@ -496,10 +500,13 @@
       if (idx !== -1) {
         events[idx].name = name;
         events[idx].date = date;
+        events[idx].hour = hour;
         events[idx].location = location;
+        events[idx].bg = selectedColor;
+        events[idx].bgimage = bgimage;
       }
     } else {
-      events.push({ id: generateId(), name, date, location });
+      events.push({ id: generateId(), name, date, hour, location, bg: selectedColor, bgimage });
     }
 
     saveEvents(events);
@@ -519,16 +526,13 @@
     if (btn.classList.contains('btn-embed')) {
       const area = document.getElementById('embed-' + id);
       area.classList.toggle('show');
-      // hide preview when toggling
       const frame = document.getElementById('preview-frame-' + id);
       if (frame) frame.style.display = 'none';
     }
 
     if (btn.classList.contains('btn-copy')) {
       const ev = events.find(e => e.id === id);
-      if (ev) {
-        navigator.clipboard.writeText(getEmbedUrl(ev)).then(() => showToast('Copied!'));
-      }
+      if (ev) navigator.clipboard.writeText(getEmbedUrl(ev)).then(() => showToast('Copied!'));
     }
 
     if (btn.classList.contains('btn-preview')) {
@@ -538,9 +542,7 @@
       const ev = events.find(e => e.id === id);
       if (frame && ev) {
         frame.style.display = frame.style.display === 'none' ? 'block' : 'none';
-        if (frame.style.display === 'block') {
-          frame.src = getEmbedUrl(ev);
-        }
+        if (frame.style.display === 'block') frame.src = getEmbedUrl(ev);
       }
     }
 
@@ -550,7 +552,10 @@
         editingId = ev.id;
         nameInput.value = ev.name;
         dateInput.value = ev.date;
+        hourSelect.value = ev.hour;
         locationInput.value = ev.location || '';
+        bgimageInput.value = ev.bgimage || '';
+        selectSwatch(ev.bg || 'FFE74C');
         formTitle.textContent = 'Edit Event';
         btnSave.textContent = 'Update';
         btnCancel.style.display = 'inline-flex';

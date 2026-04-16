@@ -15,10 +15,51 @@
     justify-content: center;
     min-height: 100vh;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Noto Sans JP', sans-serif;
-    background: transparent;
+    background: #FFFFFF;
     color: #1e293b;
     overflow: hidden;
   }
+
+  /* Background image mode */
+  body.has-bgimage {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  body.has-bgimage::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    z-index: 0;
+  }
+
+  body.has-bgimage .container { position: relative; z-index: 1; }
+
+  /* Dark mode (for dark bg colors or bg image) */
+  body.dark { color: #f1f5f9; }
+  body.dark .event-name { color: #fff; }
+  body.dark .event-date { color: rgba(255,255,255,0.7); }
+  body.dark .divider { background: rgba(255,255,255,0.4); }
+  body.dark .unit {
+    background: rgba(255,255,255,0.15);
+    border-color: rgba(255,255,255,0.2);
+    backdrop-filter: blur(8px);
+  }
+  body.dark .unit .value { color: #fff; }
+  body.dark .unit .label { color: rgba(255,255,255,0.6); }
+  body.dark .separator { color: rgba(255,255,255,0.35); }
+  body.dark .weather-card {
+    background: rgba(255,255,255,0.15);
+    border-color: rgba(255,255,255,0.2);
+    backdrop-filter: blur(8px);
+  }
+  body.dark .weather-label { color: rgba(255,255,255,0.6); }
+  body.dark .weather-desc { color: #fff; }
+  body.dark .weather-note { color: rgba(255,255,255,0.5); }
+  body.dark .finished { color: #fbbf24; }
+  body.dark .finished .sub { color: rgba(255,255,255,0.6); }
 
   .container {
     text-align: center;
@@ -27,10 +68,7 @@
     max-width: 520px;
   }
 
-  /* Header: event name + date */
-  .event-header {
-    margin-bottom: 24px;
-  }
+  .event-header { margin-bottom: 24px; }
 
   .event-name {
     font-size: 1.3rem;
@@ -48,7 +86,6 @@
     letter-spacing: 0.02em;
   }
 
-  /* Divider */
   .divider {
     width: 40px;
     height: 3px;
@@ -57,7 +94,6 @@
     margin: 0 auto 24px;
   }
 
-  /* Countdown */
   .countdown {
     display: flex;
     gap: 10px;
@@ -99,7 +135,6 @@
     padding-bottom: 8px;
   }
 
-  /* Finished state */
   .finished {
     font-size: 1.3rem;
     font-weight: 700;
@@ -114,10 +149,7 @@
     margin-top: 4px;
   }
 
-  /* Weather */
-  .weather-section {
-    margin-top: 20px;
-  }
+  .weather-section { margin-top: 20px; }
 
   .weather-card {
     display: inline-flex;
@@ -129,14 +161,9 @@
     padding: 12px 20px;
   }
 
-  .weather-icon {
-    font-size: 1.8rem;
-    line-height: 1;
-  }
+  .weather-icon { font-size: 1.8rem; line-height: 1; }
 
-  .weather-body {
-    text-align: left;
-  }
+  .weather-body { text-align: left; }
 
   .weather-label {
     font-size: 0.65rem;
@@ -153,13 +180,6 @@
     font-weight: 700;
   }
 
-  .weather-temp {
-    font-size: 0.78rem;
-    color: #64748b;
-    font-weight: 600;
-    margin-top: 1px;
-  }
-
   .weather-note {
     margin-top: 16px;
     font-size: 0.72rem;
@@ -167,12 +187,8 @@
     font-weight: 500;
   }
 
-  .error-msg {
-    color: #94a3b8;
-    font-size: 0.9rem;
-  }
+  .error-msg { color: #94a3b8; font-size: 0.9rem; }
 
-  /* Small screens */
   @media (max-width: 400px) {
     .container { padding: 20px 16px; }
     .unit { padding: 12px 2px 10px; border-radius: 10px; }
@@ -192,6 +208,8 @@
   const name = params.get('name');
   const date = params.get('date');
   const location = params.get('location');
+  const bg = params.get('bg');
+  const bgimage = params.get('bgimage');
 
   if (!name || !date) return;
 
@@ -199,6 +217,18 @@
   if (isNaN(targetDate.getTime())) {
     document.getElementById('app').innerHTML = '<p class="error-msg">Invalid date.</p>';
     return;
+  }
+
+  // --- Apply background ---
+  const DARK_COLORS = ['38618C', '35A7FF'];
+  const body = document.body;
+
+  if (bgimage) {
+    body.style.backgroundImage = 'url(' + CSS.escape(bgimage) + ')';
+    body.classList.add('has-bgimage', 'dark');
+  } else if (bg) {
+    body.style.background = '#' + bg;
+    if (DARK_COLORS.includes(bg)) body.classList.add('dark');
   }
 
   function escapeHtml(str) {
@@ -215,8 +245,7 @@
     const day = d.getDate();
     const w = WEEKDAYS[d.getDay()];
     const h = String(d.getHours()).padStart(2, '0');
-    const min = String(d.getMinutes()).padStart(2, '0');
-    return `${y}\u5E74${m}\u6708${day}\u65E5(${w}) ${h}:${min}`;
+    return `${y}\u5E74${m}\u6708${day}\u65E5(${w}) ${h}:00`;
   }
 
   function formatWeatherDate(dateStr) {
